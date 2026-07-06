@@ -638,6 +638,9 @@
                 <span style="font:600 13px Inter,sans-serif;color:#C3B9D6">›</span>
               </div>
             </sc-for>
+            <sc-if value="{{pfHasMore}}" hint-placeholder-val="{{true}}">
+              <div onClick="{{pfToggle}}" style="display:flex;align-items:center;justify-content:center;gap:9px;margin-top:4px;padding:10px;border-radius:11px;cursor:pointer;font:600 12.5px Inter,sans-serif;color:var(--acc);background:#F6F2FE;border:1px dashed #D9CEF3;user-select:none" style-hover="background:#F1EAFC"><span style="width:20px;height:20px;border-radius:50%;background:rgba(139,92,246,.14);display:flex;align-items:center;justify-content:center;font:700 14px Inter,sans-serif">{{pfToggleIcon}}</span>{{pfToggleLabel}}</div>
+            </sc-if>
           </div>
           <button onClick="{{exportApproach}}" style="width:100%;height:46px;margin-top:14px;border:none;border-radius:12px;background:#241350;color:#fff;font:700 13px Montserrat,sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;transition:transform .12s" style-hover="transform:translateY(-1px)" style-active="transform:translateY(0) scale(.98)">↓ Export shortlist</button>
         </div>
@@ -1041,6 +1044,7 @@ class Component extends DCLogic {
     quadOpen: {},
     currentLaunchId: 'LX-2026-0142',
     launchFilter: 'All',
+    pfOpen: false,
     creatingLaunch: false,
     costTip: false,
     hoverProj: null,
@@ -1081,8 +1085,8 @@ class Component extends DCLogic {
     { n:'342', l:'compliance flags raised', c:'#D97706' },
   ];
   enrichRows = [
-    { firm:'Zubair Basha Realty', xr:'XR33921', field:'Email', before:'—', after:'verified' },
-    { firm:'Anita Fulara Estates', xr:'XR022153', field:'GST', before:'—', after:'on file' },
+    { firm:'Zubair Realty', xr:'XR33921', field:'Email', before:'—', after:'verified' },
+    { firm:'Anita Estates', xr:'XR022153', field:'GST', before:'—', after:'on file' },
     { firm:'Synergy Enterprise', xr:'XR005158', field:'RERA', before:'expired', after:'renewed to Nov 2026' },
     { firm:'Prasad Properties', xr:'XR33907', field:'Address', before:'—', after:'updated' },
     { firm:'Home Circle Realty', xr:'XR000009', field:'Phone', before:'—', after:'verified' },
@@ -1098,7 +1102,7 @@ class Component extends DCLogic {
   ];
 
   cpData = [
-    { xr:'XR33921', firm:'Zubair Basha Realty', owner:'Zubair Basha', phone:'+91 98200 41122', email:'zubair@zbrealty.in', score:94, quad:'pf', markets:'Borivali W · Kandivali W', configs:'3 & 4 BHK', configSet:['3 BHK','4 BHK'], pinCodes:['400092','400091'], priceLow:2.2, priceHigh:4.0, devTypes:['Branded'], projectsDone:12, lastActive:'12 days ago', lastActiveDays:12, devCount:9, years:15, rera:'ok', reraNum:'A51900001234 · valid to Mar 2027', pan:'AABCZ••••2F', gst:true, gstNum:'27AABCZ1234F1Z5', fit:92, proven:95, got:[24,19,18,13,10,10],
+    { xr:'XR33921', firm:'Zubair Realty', owner:'Zubair Basha', phone:'+91 98200 41122', email:'zubair@zbrealty.in', score:94, quad:'pf', markets:'Borivali W · Kandivali W', configs:'3 & 4 BHK', configSet:['3 BHK','4 BHK'], pinCodes:['400092','400091'], priceLow:2.2, priceHigh:4.0, devTypes:['Branded'], projectsDone:12, lastActive:'12 days ago', lastActiveDays:12, devCount:9, years:15, rera:'ok', reraNum:'A51900001234 · valid to Mar 2027', pan:'AABCZ••••2F', gst:true, gstNum:'27AABCZ1234F1Z5', fit:92, proven:95, got:[24,19,18,13,10,10],
       track:[{p:'Ajmera PVLR 3.0',u:14,v:22},{p:'Kamdhenu Zenith',u:9,v:18},{p:'Raheja Exotica',u:11,v:25}],
       alsoActive:[{p:'Rustomjee Uptown',dev:'Rustomjee',dist:'1.2 km',days:'8 days ago'},{p:'Oberoi Sky City',dev:'Oberoi Realty',dist:'2.1 km',days:'5 days ago'},{p:'Lodha Bellagio',dev:'Lodha',dist:'1.8 km',days:'15 days ago'}] },
     { xr:'XR022153', firm:'Anita Fulara Estates', owner:'Anita Fulara', phone:'+91 98670 33210', email:'anita@fularaestates.in', score:91, quad:'pf', markets:'Borivali W · Dahisar', configs:'2 & 3 BHK', configSet:['2 BHK','3 BHK'], pinCodes:['400092','400095'], priceLow:1.8, priceHigh:3.2, devTypes:['Branded'], projectsDone:9, lastActive:'9 days ago', lastActiveDays:9, devCount:7, years:11, rera:'ok', reraNum:'A51900004521 · valid to Jan 2027', pan:'AAFCF••••9K', gst:true, gstNum:'27AAFCF4521K1Z2', fit:88, proven:91, got:[24,18,17,12,10,10],
@@ -1141,9 +1145,9 @@ class Component extends DCLogic {
   ];
 
   micro = [
-    { name:'Ajmera Manhattan', dev:'Ajmera', sold:66, asking:3.0, transacted:2.4, rate:23300, dist:1.2, cat:'luxury', mx:'58%', my:'20%', units:210, inv:72, growth:8, share:18, topcp:'Zubair Basha Realty' },
+    { name:'Ajmera Manhattan', dev:'Ajmera', sold:66, asking:3.0, transacted:2.4, rate:23300, dist:1.2, cat:'luxury', mx:'58%', my:'20%', units:210, inv:72, growth:8, share:18, topcp:'Zubair Realty' },
     { name:'Rustomjee Uptown', dev:'Rustomjee', sold:71, asking:2.8, transacted:2.35, rate:24500, dist:1.1, cat:'premium', mx:'19%', my:'28%', units:180, inv:52, growth:6, share:14, topcp:'Anita Fulara Estates' },
-    { name:'Oberoi Sky City', dev:'Oberoi Realty', sold:62, asking:3.4, transacted:2.9, rate:23200, dist:2.3, cat:'premium', mx:'82%', my:'40%', units:240, inv:91, growth:11, share:21, topcp:'Zubair Basha Realty' },
+    { name:'Oberoi Sky City', dev:'Oberoi Realty', sold:62, asking:3.4, transacted:2.9, rate:23200, dist:2.3, cat:'premium', mx:'82%', my:'40%', units:240, inv:91, growth:11, share:21, topcp:'Zubair Realty' },
     { name:'Lodha Bellagio', dev:'Lodha Group', sold:54, asking:3.6, transacted:3.0, rate:26100, dist:1.9, cat:'mid', mx:'20%', my:'62%', units:160, inv:74, growth:9, share:12, topcp:'Synergy Enterprise' },
     { name:'Kanakia Silicon Valley', dev:'Kanakia Spaces', sold:48, asking:2.4, transacted:2.05, rate:21900, dist:2.6, cat:'affordable', mx:'83%', my:'72%', units:200, inv:104, growth:4, share:9, topcp:'BR Real Estate' },
     { name:'Kalpataru Elitus', dev:'Kalpataru', sold:58, asking:3.2, transacted:2.7, rate:24000, dist:1.5, cat:'mid', mx:'50%', my:'88%', units:190, inv:80, growth:7, share:15, topcp:'Prasad Properties' },
@@ -1154,8 +1158,8 @@ class Component extends DCLogic {
     { label:'RERA valid', pct:94 }, { label:'PAN on file', pct:98 }, { label:'GST on file', pct:89 }, { label:'Email verified', pct:92 },
   ];
   feed = [
-    { firm:'Zubair Basha Realty', what:'RERA renewed to Mar 2027', time:'12 min ago', dot:'#1E8E5A' },
-    { firm:'Anita Fulara Estates', what:'Email verified', time:'34 min ago', dot:'#8B5CF6' },
+    { firm:'Zubair Realty', what:'RERA renewed to Mar 2027', time:'12 min ago', dot:'#1E8E5A' },
+    { firm:'Anita Estates', what:'Email verified', time:'34 min ago', dot:'#8B5CF6' },
     { firm:'Synergy Enterprise', what:'GST status updated', time:'1 hr ago', dot:'#8B5CF6' },
     { firm:'Prasad Properties', what:'Phone re-verified', time:'2 hrs ago', dot:'#1E8E5A' },
     { firm:'BR Real Estate', what:'RERA flagged expiring in 30 days', time:'3 hrs ago', dot:'#D97706' },
@@ -1428,7 +1432,13 @@ class Component extends DCLogic {
     const pfSource = this.cpData.filter(c => c.quad === 'pf').sort((a, b) => b.score - a.score);
     const pfCount = pfSource.length;
     const pfCardBase = 'display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:11px;margin-bottom:8px;cursor:pointer;transition:border-color .15s,background .15s;';
-    const pfList = pfSource.map((c, idx) => { const hl = s.hoverDot === c.xr; return {
+    const PF_CAP = 5;
+    const pfExpanded = !!s.pfOpen;
+    const pfShown = pfExpanded ? pfSource : pfSource.slice(0, PF_CAP);
+    const pfHasMore = pfSource.length > PF_CAP;
+    const pfToggleLabel = pfExpanded ? 'Show less' : ('+' + (pfSource.length - PF_CAP) + ' more partners');
+    const pfToggleIcon = pfExpanded ? '−' : '+';
+    const pfList = pfShown.map((c, idx) => { const hl = s.hoverDot === c.xr; return {
       name:c.firm, xr:c.xr, score:c.score,
       cardStyle: pfCardBase + 'border:1px solid ' + (hl ? 'var(--acc)' : '#F0ECF6') + ';background:' + (hl ? '#F4EFFC' : '#FAF8FD') + ';animation:fadeUp .42s cubic-bezier(.2,.8,.2,1) both;animation-delay:' + (idx * 75 + 260) + 'ms',
       onEnter: () => this.setState({ hoverDot: c.xr }), onLeave: () => this.setState({ hoverDot: null }),
@@ -1512,9 +1522,9 @@ class Component extends DCLogic {
     const byFirm = (name) => this.cpData.find(c => c.firm === name);
     const mkCp = (name) => { const c = byFirm(name); return { firm: name, onClick: () => { if (c) this.openProfile(c.xr); } }; };
     const overlap = [
-      { project:'Oberoi Sky City', matched:14, total:38, names:['Zubair Basha Realty', 'Synergy Enterprise', 'BR Real Estate'] },
-      { project:'Rustomjee Uptown', matched:11, total:29, names:['Anita Fulara Estates', 'Home Circle Realty', 'Prasad Properties'] },
-      { project:'Ajmera Manhattan', matched:12, total:33, names:['Zubair Basha Realty', 'Crest Realty', 'Pinnacle Homes'] },
+      { project:'Oberoi Sky City', matched:14, total:38, names:['Zubair Realty', 'Synergy Enterprise', 'BR Real Estate'] },
+      { project:'Rustomjee Uptown', matched:11, total:29, names:['Anita Estates', 'Home Circle Realty', 'Prasad Properties'] },
+      { project:'Ajmera Manhattan', matched:12, total:33, names:['Zubair Realty', 'Crest Realty', 'Pinnacle Homes'] },
     ].map(o => { const leak = o.matched >= 12; return {
       project: o.project, tag: o.matched + ' matched · ' + o.total + ' total',
       tagBg: leak ? '#FEF0E1' : '#F1EDFA', tagColor: leak ? '#D97706' : '#5B21B6',
@@ -1643,7 +1653,8 @@ class Component extends DCLogic {
       assignMgr: () => this.showToast('Assigned to Sourcing Manager — Rohit K.'),
 
       scatterDots, leaveDot: () => this.setState({ hoverDot: null }),
-      pfList, pfCount, quadCells, helpItems,
+      pfList, pfCount, quadCells, pfHasMore, pfToggleLabel, pfToggleIcon,
+      pfToggle: () => this.setState({ pfOpen: !this.state.pfOpen }), helpItems,
       exportApproach: () => this.showToast('Shortlist exported · ' + pfCount + ' CPs (.csv)'),
       exportShortlist: () => this.showToast('Shortlist exported · ' + s.shortlist.length + ' CPs (.csv)'),
 
