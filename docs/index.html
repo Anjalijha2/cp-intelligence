@@ -628,10 +628,16 @@
                         <span style="font:800 12.5px Montserrat,sans-serif;color:#1E1145;background:#fff;border:1px solid #E4DEF0;border-radius:7px;padding:3px 8px;min-width:32px;text-align:center;flex:none">{{f.score}}</span>
                       </div>
                     </sc-for>
+                    <sc-if value="{{cell.hasMore}}" hint-placeholder-val="{{true}}">
+                      <div onClick="{{cell.onToggle}}" style="{{cell.toggleStyle}}" style-hover="background:#fff">
+                        <span style="width:18px;height:18px;border-radius:50%;background:{{cell.color}}22;color:{{cell.color}};display:flex;align-items:center;justify-content:center;font:700 13px Inter,sans-serif;flex:none">{{cell.toggleIcon}}</span>
+                        <span>{{cell.toggleLabel}}</span>
+                      </div>
+                    </sc-if>
                   </div>
                 </sc-for>
               </div>
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px"><span style="font:600 10px Inter,sans-serif;color:#A99FBF;letter-spacing:.5px">LOW</span><span style="font:700 11px Montserrat,sans-serif;color:var(--acc);letter-spacing:.5px">FIT FOR THIS LAUNCH →</span><span style="font:600 10px Inter,sans-serif;color:#A99FBF;letter-spacing:.5px">HIGH</span></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px"><span style="font:700 11px Montserrat,sans-serif;color:var(--acc);letter-spacing:.5px">FIT FOR THIS LAUNCH →</span><span style="font:600 10px Inter,sans-serif;color:#A99FBF;letter-spacing:.5px">HIGH</span></div>
             </div>
           </div>
         </div>
@@ -1005,6 +1011,7 @@ class Component extends DCLogic {
     advActive: 180,
     reraOnly: false,
     complianceFilter: 'All',
+    quadOpen: {},
     costTip: false,
     hoverProj: null,
     showPwd: false,
@@ -1356,10 +1363,22 @@ class Component extends DCLogic {
       { key:'tv', title:'Test & Validate', sub:'Fit but unproven', color:'#D97706', tint:'#FEF7EE', border:'' },
     ];
     const allDots = [...this.cpData.map(c => ({ name:c.firm, xr:c.xr, score:c.score, quad:c.quad, inResults:true })), ...this.scatterExtra.map(c => ({ name:c.name, xr:c.xr, score:c.score, quad:c.quad, inResults:false }))];
-    const quadCells = quadDefs.map((qd, ci) => ({
+    const QUAD_CAP = 4;
+    const quadCells = quadDefs.map((qd, ci) => {
+      const allQ = allDots.filter(c => c.quad === qd.key).sort((a, b) => b.score - a.score);
+      const expanded = !!s.quadOpen[qd.key];
+      const shownQ = expanded ? allQ : allQ.slice(0, QUAD_CAP);
+      const hidden = allQ.length - QUAD_CAP;
+      return {
       ...qd,
       cellStyle: 'background:' + qd.tint + ';padding:15px 16px;min-height:158px;' + qd.border,
-      firms: allDots.filter(c => c.quad === qd.key).sort((a, b) => b.score - a.score).map((c, i) => {
+      hasMore: allQ.length > QUAD_CAP,
+      expanded,
+      toggleLabel: expanded ? 'Show less' : ('+' + hidden + ' more partners'),
+      toggleIcon: expanded ? '−' : '+',
+      toggleStyle: 'display:flex;align-items:center;gap:9px;margin-top:4px;padding:8px 9px;border-radius:9px;cursor:pointer;font:600 12px Inter,sans-serif;color:' + qd.color + ';background:rgba(255,255,255,.5);border:1px dashed ' + qd.color + '55;transition:background .14s,transform .12s;user-select:none',
+      onToggle: () => this.toggleQuad(qd.key),
+      firms: shownQ.map((c, i) => {
         const hl = s.hoverDot === c.xr;
         return {
           name: c.name, xr: c.xr, score: c.score,
@@ -1369,7 +1388,8 @@ class Component extends DCLogic {
           onClick: () => { if (c.inResults) this.openProfile(c.xr); },
         };
       }),
-    }));
+      };
+    });
     const helpItems = [
       { c:'#1E8E5A', t:'Top right — Proven + Fit', d:'Best combination of past performance and fit. Prioritise outreach.' },
       { c:'#8B5CF6', t:'Top left — Proven, low fit', d:'Strong performers but lower fit. Approach if bandwidth allows.' },
@@ -1645,6 +1665,7 @@ class Component extends DCLogic {
     this.setState({ geoState: st, geoDistrict: di, geoCity: ci, pins, geoSearch: '' });
   }
 
+  toggleQuad(k) { const o = this.state.quadOpen; this.setState({ quadOpen: { ...o, [k]: !o[k] } }); }
   toggleConfig(c) { const has = this.state.configs.includes(c); this.setState({ configs: has ? this.state.configs.filter(x => x !== c) : [...this.state.configs, c] }); }
   toggleDev(t) { const has = this.state.advDevTypes.includes(t); this.setState({ advDevTypes: has ? this.state.advDevTypes.filter(x => x !== t) : [...this.state.advDevTypes, t] }); }
 }
