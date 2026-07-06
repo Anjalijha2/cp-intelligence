@@ -165,24 +165,7 @@
   <div style="flex:1;display:flex;flex-direction:column;min-width:0">
     <!-- TOPBAR -->
     <header style="height:66px;flex:none;background:#fff;border-bottom:1px solid #ECE7F1;display:flex;align-items:center;padding:0 28px;gap:20px;position:relative;z-index:40">
-      <div data-search="1" style="position:relative;flex:1;max-width:420px">
-        <div style="display:flex;align-items:center;gap:10px;height:40px;background:#F5F2F9;border:1px solid #ECE7F1;border-radius:11px;padding:0 14px;color:#8A7FA8">
-          <span style="font-size:15px">⌕</span>
-          <input value="{{searchQuery}}" onInput="{{setSearch}}" placeholder="Search CPs, XRD codes, projects…" style="flex:1;border:none;background:transparent;font:500 13.5px Inter,sans-serif;color:#1E1145">
-        </div>
-        <sc-if value="{{showSearchDrop}}" hint-placeholder-val="{{false}}">
-          <div style="position:absolute;top:48px;left:0;right:0;background:#fff;border:1px solid #ECE7F1;border-radius:12px;box-shadow:0 20px 44px -18px rgba(30,17,69,.35);z-index:70;overflow:hidden;animation:pop .14s ease both">
-            <sc-for list="{{searchResults}}" as="r" hint-placeholder-count="3">
-              <div onClick="{{r.onClick}}" style="display:flex;align-items:center;gap:12px;padding:11px 14px;cursor:pointer;border-bottom:1px solid #F4F1F8" style-hover="background:#F7F4FB">
-                <div style="width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#8B5CF6,#B8963E);display:flex;align-items:center;justify-content:center;font:700 13px Montserrat,sans-serif;color:#fff">{{r.score}}</div>
-                <div style="flex:1;min-width:0"><div style="font:600 13px Inter,sans-serif;color:#1E1145">{{r.firm}}</div><div style="font:500 11px Inter,sans-serif;color:#A99FBF">{{r.xr}}</div></div>
-                <span style="color:#C3B9D6">›</span>
-              </div>
-            </sc-for>
-            <sc-if value="{{searchEmpty}}" hint-placeholder-val="{{false}}"><div style="padding:14px;font:500 12.5px Inter,sans-serif;color:#8A7FA8">No CPs match that search.</div></sc-if>
-          </div>
-        </sc-if>
-      </div>
+      <div style="flex:1"></div>
       <div style="flex:1"></div>
       <div data-bell="1" style="position:relative">
         <div onClick="{{toggleBell}}" style="position:relative;width:40px;height:40px;border-radius:11px;background:#F5F2F9;display:flex;align-items:center;justify-content:center;font-size:16px;color:#5B4E80;cursor:pointer;transition:background .15s" style-hover="background:#ECE7F3">🔔<span style="position:absolute;top:9px;right:10px;width:7px;height:7px;border-radius:50%;background:#DC2626;border:1.5px solid #fff"></span></div>
