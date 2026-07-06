@@ -145,17 +145,18 @@
     </div>
     <div style="font:600 10px Inter,sans-serif;letter-spacing:1.5px;color:#6B5E92;padding:8px 10px;text-transform:uppercase">Workspace</div>
     <div style="{{navDash}}" onClick="{{goDashboard}}" style-active="transform:scale(.98)"><span style="width:18px;display:inline-flex">▦</span>Dashboard</div>
+    <div style="{{navLaunches}}" onClick="{{goLaunches}}" style-active="transform:scale(.98)"><span style="width:18px;display:inline-flex">▤</span>Launches</div>
     <div style="{{navRefresh}}" onClick="{{goRefresh}}" style-active="transform:scale(.98)"><span style="width:18px;display:inline-flex">⟳</span>Refresh &amp; Verify</div>
     <div style="{{navMatch}}" onClick="{{goMatch}}" style-active="transform:scale(.98)"><span style="width:18px;display:inline-flex">◎</span>Launch Match</div>
     <div style="{{navQuad}}" onClick="{{goQuadrant}}" style-active="transform:scale(.98)"><span style="width:18px;display:inline-flex">◫</span>Quadrant View</div>
     <div style="{{navMicro}}" onClick="{{goMicro}}" style-active="transform:scale(.98)"><span style="width:18px;display:inline-flex">◈</span>Micro-Market</div>
-    <div onClick="{{openShortlistPanel}}" style="margin-top:auto;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:13px;padding:14px 15px;cursor:pointer;transition:background .15s" style-hover="background:rgba(255,255,255,.09)">
-      <div style="font:600 11px Inter,sans-serif;color:#B8963E;letter-spacing:.5px;margin-bottom:5px">ACTIVE LAUNCH</div>
-      <div style="font:700 13px Montserrat,sans-serif;color:#fff;line-height:1.25">New Launch — Borivali West</div>
-      <div style="font:500 11px Inter,sans-serif;color:#8B7DB0;margin-top:6px">3 &amp; 4 BHK · ₹2–4 Cr · Branded</div>
+    <div onClick="{{goLaunches}}" style="margin-top:auto;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:13px;padding:14px 15px;cursor:pointer;transition:background .15s" style-hover="background:rgba(255,255,255,.09)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px"><span style="font:600 11px Inter,sans-serif;color:#B8963E;letter-spacing:.5px">CURRENT LAUNCH</span><span style="font:700 9px Inter,sans-serif;letter-spacing:.4px;text-transform:uppercase;color:{{curLaunchStColor}};background:{{curLaunchStBg}};padding:2px 7px;border-radius:20px">{{curLaunchStLabel}}</span></div>
+      <div style="font:700 13px Montserrat,sans-serif;color:#fff;line-height:1.25">{{curLaunchName}}</div>
+      <div style="font:500 11px Inter,sans-serif;color:#8B7DB0;margin-top:6px">{{curLaunchMeta}}</div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-top:11px">
-        <div style="display:flex;align-items:center;gap:6px;font:600 11px Inter,sans-serif;color:#C9BEE6"><span style="width:7px;height:7px;border-radius:50%;background:var(--acc);box-shadow:0 0 0 3px rgba(139,92,246,.25)"></span>{{shortlistCount}} in shortlist</div>
-        <span style="font:600 11px Inter,sans-serif;color:#B8963E">View →</span>
+        <div onClick="{{openShortlistPanel}}" data-stop="1" style="display:flex;align-items:center;gap:6px;font:600 11px Inter,sans-serif;color:#C9BEE6"><span style="width:7px;height:7px;border-radius:50%;background:var(--acc);box-shadow:0 0 0 3px rgba(139,92,246,.25)"></span>{{shortlistCount}} in shortlist</div>
+        <span style="font:600 11px Inter,sans-serif;color:#B8963E">All launches →</span>
       </div>
     </div>
   </aside>
@@ -213,10 +214,10 @@
     <!-- ---------- DASHBOARD ---------- -->
     <sc-if value="{{onDashboard}}" hint-placeholder-val="{{false}}">
     <div style="padding:30px 34px 44px;animation:fadeUp .35s ease both">
-      <div style="font:600 12px Inter,sans-serif;letter-spacing:1.5px;color:var(--acc);text-transform:uppercase">CP Database Health</div>
+      <div style="font:600 12px Inter,sans-serif;letter-spacing:1.5px;color:var(--acc);text-transform:uppercase">CP Data Health</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-top:6px">
         <div>
-          <h1 style="font:800 27px Montserrat,sans-serif;margin:0;letter-spacing:-.4px">Your database is now true.</h1>
+          <h1 style="font:800 27px Montserrat,sans-serif;margin:0;letter-spacing:-.4px">Your data is now Accurate.</h1>
           <div style="font:500 14px Inter,sans-serif;color:#6B6285;margin-top:6px">Verified, current, and compounding — every launch makes the next one faster.</div>
         </div>
         <button onClick="{{goMatch}}" style="height:46px;padding:0 22px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;font:700 14px Montserrat,sans-serif;cursor:pointer;box-shadow:0 12px 26px -12px rgba(139,92,246,.7);display:flex;align-items:center;gap:9px;transition:transform .14s,box-shadow .14s" style-hover="transform:translateY(-1px);box-shadow:0 16px 32px -12px rgba(139,92,246,.85)" style-active="transform:translateY(0) scale(.98)">New Launch Match →</button>
@@ -671,6 +672,49 @@
     </div>
     </sc-if>
 
+    <!-- ---------- LAUNCHES ---------- -->
+    <sc-if value="{{onLaunches}}" hint-placeholder-val="{{false}}">
+    <div style="padding:28px 34px 44px;animation:fadeUp .35s ease both">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between">
+        <div>
+          <div style="font:600 12px Inter,sans-serif;letter-spacing:1.5px;color:var(--acc);text-transform:uppercase">Launch management</div>
+          <h1 style="font:800 24px Montserrat,sans-serif;margin:6px 0 4px">Launches</h1>
+          <div style="font:500 13.5px Inter,sans-serif;color:#6B6285">{{launchSummary}}</div>
+        </div>
+        <button onClick="{{newLaunch}}" style="height:44px;padding:0 20px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;font:700 13px Montserrat,sans-serif;cursor:pointer;display:flex;align-items:center;gap:9px;box-shadow:0 12px 26px -12px rgba(139,92,246,.8);transition:transform .12s" style-hover="transform:translateY(-1px)" style-active="transform:translateY(0) scale(.98)">+ New Launch</button>
+      </div>
+
+      <div style="display:flex;gap:9px;margin:22px 0 16px;flex-wrap:wrap">
+        <sc-for list="{{launchFilterChips}}" as="fc" hint-placeholder-count="5">
+          <div onClick="{{fc.onClick}}" style="{{fc.style}}">{{fc.label}} <span style="opacity:.7">{{fc.count}}</span></div>
+        </sc-for>
+      </div>
+
+      <div style="background:#fff;border:1px solid #ECE7F1;border-radius:16px;box-shadow:var(--cardShadow);overflow:hidden">
+        <div style="display:grid;grid-template-columns:2.4fr 1.6fr 1fr .9fr 1.4fr;gap:12px;padding:12px 20px;border-bottom:1px solid #F2EEF7;font:700 10px Inter,sans-serif;letter-spacing:.6px;color:#A99FBF;text-transform:uppercase">
+          <span>Launch</span><span>Configuration</span><span>Created</span><span>Status</span><span style="text-align:right">Actions</span>
+        </div>
+        <sc-for list="{{launchList}}" as="l" hint-placeholder-count="6">
+          <div style="{{l.rowStyle}}">
+            <div onClick="{{l.onOpen}}" style="cursor:pointer;min-width:0">
+              <div style="font:700 13.5px Montserrat,sans-serif;color:#1E1145;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{l.name}}<sc-if value="{{l.isCurrent}}" hint-placeholder-val="{{false}}"><span style="font:700 9px Inter,sans-serif;color:var(--acc);background:#F1EDFA;padding:2px 7px;border-radius:20px;margin-left:8px">CURRENT</span></sc-if></div>
+              <div style="font:500 11px Inter,sans-serif;color:#A99FBF;margin-top:2px">{{l.id}} · {{l.city}}</div>
+            </div>
+            <div style="min-width:0"><div style="font:600 12px Inter,sans-serif;color:#4B4568">{{l.config}}</div><div style="font:500 11px Inter,sans-serif;color:#A99FBF;margin-top:2px">{{l.price}} · {{l.dev}}</div></div>
+            <div style="font:500 12px Inter,sans-serif;color:#6B6285">{{l.created}}<div style="font:500 10.5px Inter,sans-serif;color:#A99FBF;margin-top:2px">{{l.subMetric}}</div></div>
+            <div><span style="display:inline-flex;align-items:center;gap:6px;font:700 10.5px Inter,sans-serif;color:{{l.stColor}};background:{{l.stBg}};padding:4px 10px;border-radius:20px"><span style="width:6px;height:6px;border-radius:50%;background:{{l.stColor}}"></span>{{l.stLabel}}</span></div>
+            <div style="display:flex;gap:7px;justify-content:flex-end;flex-wrap:wrap">
+              <sc-for list="{{l.actions}}" as="a" hint-placeholder-count="2">
+                <div onClick="{{a.onClick}}" style="{{a.style}}">{{a.label}}</div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+        <sc-if value="{{launchEmpty}}" hint-placeholder-val="{{false}}"><div style="padding:34px;text-align:center;font:500 13px Inter,sans-serif;color:#A99FBF">No launches in this view.</div></sc-if>
+      </div>
+    </div>
+    </sc-if>
+
     <!-- ---------- MICRO-MARKET ---------- -->
     <sc-if value="{{onMicro}}" hint-placeholder-val="{{false}}">
     <div style="padding:28px 34px 44px;animation:fadeUp .35s ease both">
@@ -1012,6 +1056,9 @@ class Component extends DCLogic {
     reraOnly: false,
     complianceFilter: 'All',
     quadOpen: {},
+    currentLaunchId: 'LX-2026-0142',
+    launchFilter: 'All',
+    creatingLaunch: false,
     costTip: false,
     hoverProj: null,
     showPwd: false,
@@ -1021,6 +1068,26 @@ class Component extends DCLogic {
   labels = ['Geography match', 'Configuration track record', 'Price-band experience', 'Developer-type history', 'Recency & activity', 'Compliance & completeness'];
   subs = ['Pin-code overlap', '3–4 BHK typology', '₹2–4 Cr band', 'Branded developers', 'Active last 6 months', 'Data & docs complete'];
   weights = [25, 20, 20, 15, 10, 10];
+  launches = [
+    { id:'LX-2026-0142', name:'Borivali West — Phase 2', city:'Borivali West', config:'3 & 4 BHK', price:'₹2–4 Cr', dev:'Branded', status:'active', created:'28 Jun 2026', matches:8, shortlist:1 },
+    { id:'LX-2026-0138', name:'Kandivali West — Skyline', city:'Kandivali West', config:'2 & 3 BHK', price:'₹1.6–3 Cr', dev:'Branded', status:'active', created:'19 Jun 2026', matches:11, shortlist:4 },
+    { id:'LX-2026-0131', name:'Thane West — Lake Vista', city:'Thane West', config:'2 & 3 BHK', price:'₹1.4–2.6 Cr', dev:'Branded · Local', status:'active', created:'06 Jun 2026', matches:9, shortlist:3 },
+    { id:'LX-2026-0129', name:'Whitefield — ITPL Edge', city:'Whitefield', config:'3 & 4 BHK', price:'₹1.8–3.4 Cr', dev:'Branded', status:'draft', created:'02 Jun 2026', matches:0, shortlist:0 },
+    { id:'LX-2026-0124', name:'Kharadi — Riverdale', city:'Kharadi', config:'2 & 3 BHK', price:'₹1.2–2.2 Cr', dev:'Branded', status:'draft', created:'24 May 2026', matches:0, shortlist:0 },
+    { id:'LX-2026-0118', name:'Andheri West — Lokhandwala', city:'Andheri West', config:'3 & 4 BHK', price:'₹3–5.5 Cr', dev:'Branded', status:'completed', created:'11 May 2026', matches:14, shortlist:9, soldPct:92 },
+    { id:'LX-2026-0112', name:'Malad West — Link Grove', city:'Malad West', config:'2 & 3 BHK', price:'₹1.5–2.8 Cr', dev:'Branded · Local', status:'completed', created:'28 Apr 2026', matches:12, shortlist:7, soldPct:88 },
+    { id:'LX-2026-0107', name:'Baner — Hillcrest', city:'Baner', config:'2 & 3 BHK', price:'₹1.3–2.4 Cr', dev:'Branded', status:'completed', created:'15 Apr 2026', matches:10, shortlist:6, soldPct:95 },
+    { id:'LX-2026-0101', name:'SG Highway — Corporate One', city:'SG Highway', config:'3 & 4 BHK', price:'₹1.9–3.6 Cr', dev:'Branded', status:'inactive', created:'02 Apr 2026', matches:8, shortlist:2 },
+    { id:'LX-2026-0094', name:'Koramangala — Forum Rise', city:'Koramangala', config:'2 & 3 BHK', price:'₹2.2–4 Cr', dev:'Branded', status:'inactive', created:'20 Mar 2026', matches:7, shortlist:1 },
+    { id:'LX-2026-0088', name:'Ghodbunder — Waghbil Heights', city:'Ghodbunder Road', config:'1 & 2 BHK', price:'₹0.9–1.8 Cr', dev:'Local', status:'completed', created:'06 Mar 2026', matches:9, shortlist:5, soldPct:81 },
+    { id:'LX-2026-0079', name:'Hebbal — Manyata North', city:'Hebbal', config:'3 & 4 BHK', price:'₹2–3.8 Cr', dev:'Branded', status:'completed', created:'18 Feb 2026', matches:11, shortlist:8, soldPct:90 },
+  ];
+  launchStatusMeta = {
+    active:    { label:'Active',    color:'#1E8E5A', bg:'#E4F3EC' },
+    draft:     { label:'Draft',     color:'#D97706', bg:'#FEF0E1' },
+    completed: { label:'Completed', color:'#5B21B6', bg:'#F1EDFA' },
+    inactive:  { label:'Inactive',  color:'#7A8091', bg:'#EEF0F3' },
+  };
   pinPool = ['400095', '400064', '400066', '400097', '400103'];
   vdnbMap = { XR33921:22, XR022153:18, XR005158:21, XR33907:22, XR010233:20, XR029001:21, XR022413:27, XR000009:28, XR018842:30, XR041220:32 };
   newSet = ['XR010233', 'XR029001', 'XR018842'];
@@ -1289,6 +1356,36 @@ class Component extends DCLogic {
     const navBase = 'display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:10px;cursor:pointer;font:600 14px Inter,sans-serif;margin-bottom:5px;transition:transform .12s,background .15s,color .15s;';
     const activeKey = screen === 'profile' ? 'match' : (screen === 'compliance' ? 'dashboard' : screen);
     const nav = (key) => navBase + (activeKey === key ? 'color:#fff;background:linear-gradient(135deg,var(--acc),var(--acc2));box-shadow:0 8px 20px -10px rgba(139,92,246,.7)' : 'color:#B9B0CF;background:transparent');
+    // --- Launches ---
+    const lm = this.launchStatusMeta;
+    const lc = { all: this.launches.length, active: 0, draft: 0, completed: 0, inactive: 0 };
+    this.launches.forEach(l => { lc[l.status] = (lc[l.status] || 0) + 1; });
+    const launchSummary = lc.all + ' launches · ' + lc.active + ' active · ' + lc.draft + ' draft · ' + lc.completed + ' completed · ' + lc.inactive + ' inactive';
+    const lFilters = [['All', lc.all], ['active', lc.active], ['draft', lc.draft], ['completed', lc.completed], ['inactive', lc.inactive]];
+    const launchFilterChips = lFilters.map(([key, count]) => { const on = s.launchFilter === key; return {
+      label: key === 'All' ? 'All' : lm[key].label, count,
+      onClick: () => this.setLaunchFilter(key),
+      style: 'display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:9px;cursor:pointer;font:600 12.5px Inter,sans-serif;transition:transform .1s;border:1px solid ' + (on ? 'var(--acc)' : '#ECE7F1') + ';background:' + (on ? 'var(--acc)' : '#fff') + ';color:' + (on ? '#fff' : '#6B6285'),
+    }; });
+    const actBtn = (label, color, fn) => ({ label, onClick: (e) => { if (e && e.stopPropagation) e.stopPropagation(); fn(); }, style: 'padding:6px 11px;border-radius:8px;cursor:pointer;font:600 11px Inter,sans-serif;color:' + color + ';border:1px solid ' + color + '44;background:#fff;transition:background .12s;white-space:nowrap' });
+    const launchRows = this.launches.filter(l => s.launchFilter === 'All' || l.status === s.launchFilter);
+    const launchList = launchRows.map((l, i) => {
+      const meta = lm[l.status]; const isCur = l.id === s.currentLaunchId;
+      const acts = [];
+      if (l.status === 'draft') acts.push(actBtn('Activate', '#1E8E5A', () => this.setLaunchStatus(l.id, 'active')));
+      if (l.status === 'active') { acts.push(actBtn('Complete', '#5B21B6', () => this.setLaunchStatus(l.id, 'completed'))); acts.push(actBtn('Archive', '#7A8091', () => this.setLaunchStatus(l.id, 'inactive'))); }
+      if (l.status === 'completed' || l.status === 'inactive') acts.push(actBtn('Reopen', '#D97706', () => this.setLaunchStatus(l.id, 'active')));
+      return {
+        id: l.id, name: l.name, city: l.city, config: l.config, price: l.price, dev: l.dev, created: l.created,
+        stLabel: meta.label, stColor: meta.color, stBg: meta.bg, isCurrent: isCur,
+        subMetric: l.status === 'completed' && l.soldPct != null ? (l.soldPct + '% sold') : (l.matches + ' matches · ' + l.shortlist + ' shortlisted'),
+        rowStyle: 'display:grid;grid-template-columns:2.4fr 1.6fr 1fr .9fr 1.4fr;gap:12px;align-items:center;padding:14px 20px;border-bottom:1px solid #F4F1FA;transition:background .12s;' + (isCur ? 'background:#FAF8FD;' : '') + 'animation:fadeUp .34s ease both;animation-delay:' + (i * 35) + 'ms',
+        onOpen: () => this.openLaunch(l.id),
+        actions: acts,
+      };
+    });
+    const curLaunch = this.launches.find(l => l.id === s.currentLaunchId) || this.launches[0];
+    const curMeta = lm[curLaunch.status];
 
     const W = 300, H = 96, mn = 18, mx = 82;
     const pts = this.trend.map((v, i) => [(i / (this.trend.length - 1)) * W, H - ((v - mn) / (mx - mn)) * H]);
@@ -1464,7 +1561,7 @@ class Component extends DCLogic {
 
     return {
       isLogin: screen === 'login', isApp: screen !== 'login',
-      onDashboard: screen === 'dashboard', onMatch: screen === 'match', onProfile: screen === 'profile', onQuadrant: screen === 'quadrant', onMicro: screen === 'micro',
+      onDashboard: screen === 'dashboard', onLaunches: screen === 'launches', onMatch: screen === 'match', onProfile: screen === 'profile', onQuadrant: screen === 'quadrant', onMicro: screen === 'micro',
       onRefresh: screen === 'refresh', onCompliance: screen === 'compliance',
       isLoading: screen === 'match' && s.searchState === 'loading',
       showResults: screen === 'match' && s.searchState === 'results',
@@ -1491,6 +1588,7 @@ class Component extends DCLogic {
       loginParticles: [12,27,41,58,73,88,20,36,52,66,80,9,46,63].map((lx, i) => ({ lx: lx + '%', size: (2 + (i % 3)) + 'px', dur: (7 + (i % 5) * 1.3) + 's', delay: (i * 0.7) + 's', op: 0.3 + (i % 4) * 0.14 })),
       logout: () => this.setState({ screen: 'login', bellOpen: false, shortlistOpen: false, searchQuery: '', popoverXR: null }),
       goDashboard: () => this.setState({ screen: 'dashboard' }),
+      goLaunches: () => this.setState({ screen: 'launches' }),
       goMatch: () => this.setState({ screen: 'match' }),
       goQuadrant: () => this.setState({ screen: 'quadrant' }),
       goMicro: () => this.setState({ screen: 'micro' }),
@@ -1499,7 +1597,12 @@ class Component extends DCLogic {
       backTo: () => this.setState({ screen: s.profileFrom }),
       backLabel: backMap[s.profileFrom] || '← Back',
 
-      navDash: nav('dashboard'), navRefresh: nav('refresh'), navMatch: nav('match'), navQuad: nav('quadrant'), navMicro: nav('micro'),
+      navDash: nav('dashboard'), navLaunches: nav('launches'), navRefresh: nav('refresh'), navMatch: nav('match'), navQuad: nav('quadrant'), navMicro: nav('micro'),
+      launchSummary, launchFilterChips, launchList, launchEmpty: launchList.length === 0,
+      newLaunch: () => this.newLaunch(),
+      creatingLaunch: s.creatingLaunch,
+      curLaunchName: curLaunch.name, curLaunchMeta: curLaunch.config + ' · ' + curLaunch.price + ' · ' + curLaunch.dev,
+      curLaunchStLabel: curMeta.label, curLaunchStColor: curMeta.color, curLaunchStBg: curMeta.bg,
       enrichStats: this.enrichStats, enrichRows: this.enrichRows,
       newInMarketList: this.cpData.filter(c => this.newSet.includes(c.xr)).map(c => ({ firm:c.firm, xr:c.xr, score:c.score, markets:c.markets, configs:c.configs, onOpen: () => this.openProfile(c.xr) })),
       complianceFilter: s.complianceFilter,
@@ -1666,6 +1769,21 @@ class Component extends DCLogic {
   }
 
   toggleQuad(k) { const o = this.state.quadOpen; this.setState({ quadOpen: { ...o, [k]: !o[k] } }); }
+  setLaunchStatus(id, st) { this.launches = this.launches.map(l => l.id === id ? { ...l, status: st } : l); this.forceUpdate(); this.showToast('Launch marked ' + this.launchStatusMeta[st].label.toLowerCase()); }
+  setLaunchFilter(f) { this.setState({ launchFilter: f }); }
+  openLaunch(id) { const l = this.launches.find(x => x.id === id); this.setState({ currentLaunchId: id }); if (l) this.showToast('Viewing launch · ' + l.name); }
+  newLaunch() { this.setState({ creatingLaunch: true, screen: 'match' }); this.showToast('New launch — set criteria, then Find Matching CPs'); }
+  createLaunchFromCriteria(st) {
+    const s = this.state;
+    const cfg = s.configs.length ? s.configs.map(c => c.replace(' BHK', '')).sort().join(' & ') + ' BHK' : 'All typologies';
+    const dev = s.advDevTypes.length ? s.advDevTypes.join(' · ') : 'Any';
+    const seq = 143 + this.launches.filter(l => l.id.startsWith('LX-2026-01')).length;
+    const id = 'LX-2026-0' + seq;
+    const l = { id, name: s.geoCity + ' — New Launch', city: s.geoCity, config: cfg, price: '₹' + s.priceMin + '–' + s.priceMax + ' Cr', dev, status: st, created: 'Today', matches: st === 'active' ? this.cpData.filter(c => this.matchCriteria(c)).length : 0, shortlist: 0 };
+    this.launches = [l, ...this.launches];
+    this.setState({ currentLaunchId: id, creatingLaunch: false });
+    this.showToast(st === 'draft' ? 'Draft launch saved · ' + l.name : 'Launch created · ' + l.name);
+  }
   toggleConfig(c) { const has = this.state.configs.includes(c); this.setState({ configs: has ? this.state.configs.filter(x => x !== c) : [...this.state.configs, c] }); }
   toggleDev(t) { const has = this.state.advDevTypes.includes(t); this.setState({ advDevTypes: has ? this.state.advDevTypes.filter(x => x !== t) : [...this.state.advDevTypes, t] }); }
 }
