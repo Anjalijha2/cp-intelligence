@@ -1006,6 +1006,57 @@
   </div>
 </sc-if>
 
+<!-- NEW LAUNCH DRAWER -->
+<sc-if value="{{launchDrawer}}" hint-placeholder-val="{{false}}">
+  <div onClick="{{closeLaunchDrawer}}" style="position:fixed;inset:0;background:rgba(30,17,69,.4);z-index:90;animation:fadeIn .2s ease both"></div>
+  <div style="position:fixed;top:0;right:0;bottom:0;width:452px;background:#fff;z-index:91;box-shadow:-20px 0 50px -20px rgba(30,17,69,.4);display:flex;flex-direction:column;animation:slideIn .28s cubic-bezier(.2,.8,.2,1) both">
+    <div style="padding:22px 26px;border-bottom:1px solid #ECE7F1;display:flex;align-items:center;justify-content:space-between">
+      <div><div style="font:800 18px Montserrat,sans-serif">New launch</div><div style="font:500 12px Inter,sans-serif;color:#8A7FA8;margin-top:2px">Create a launch to source channel partners for.</div></div>
+      <div onClick="{{closeLaunchDrawer}}" style="cursor:pointer;font-size:18px;color:#8A7FA8">✕</div>
+    </div>
+    <div style="flex:1;overflow:auto;padding:22px 26px">
+      <div style="display:flex;gap:14px;margin-bottom:16px">
+        <div style="flex:1"><div style="{{lfLabel}}">Project name</div><input value="{{lf.name}}" onInput="{{onLfName}}" placeholder="e.g. Andheri Heights" style="{{lfInput}}"></div>
+        <div style="flex:1"><div style="{{lfLabel}}">Developer</div><input value="{{lf.dev}}" onInput="{{onLfDev}}" placeholder="e.g. Lodha Group" style="{{lfInput}}"></div>
+      </div>
+      <div style="{{lfSection}}">Target location</div>
+      <div style="display:flex;gap:10px;margin-bottom:16px">
+        <div style="flex:1;min-width:0"><div style="{{lfLabelSm}}">State</div><select value="{{lf.state}}" onChange="{{onLfState}}" style="{{lfSelect}}"><option value="">Select State</option><sc-for list="{{lfStateOpts}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></div>
+        <div style="flex:1;min-width:0"><div style="{{lfLabelSm}}">District</div><select value="{{lf.district}}" onChange="{{onLfDistrict}}" style="{{lfSelect}}"><option value="">Select District</option><sc-for list="{{lfDistrictOpts}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></div>
+        <div style="flex:1;min-width:0"><div style="{{lfLabelSm}}">City / Area</div><select value="{{lf.city}}" onChange="{{onLfCity}}" style="{{lfSelect}}"><option value="">Select City</option><sc-for list="{{lfCityOpts}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></div>
+      </div>
+      <div style="{{lfSection}}">BHK configuration</div>
+      <div style="display:flex;gap:8px;margin-bottom:16px">
+        <sc-for list="{{lfConfigChips}}" as="c" hint-placeholder-count="4"><div onClick="{{c.onClick}}" style="{{c.style}}">{{c.label}}</div></sc-for>
+      </div>
+      <div style="{{lfSection}}">Price band — {{lfPriceLabel}}</div>
+      <div style="display:flex;gap:14px;margin-bottom:16px">
+        <div style="flex:1"><div style="{{lfLabelSm}}">Min (Cr)</div><input type="number" value="{{lf.priceMin}}" onInput="{{onLfMin}}" style="{{lfInput}}"></div>
+        <div style="flex:1"><div style="{{lfLabelSm}}">Max (Cr)</div><input type="number" value="{{lf.priceMax}}" onInput="{{onLfMax}}" style="{{lfInput}}"></div>
+      </div>
+      <div style="display:flex;gap:14px;margin-bottom:16px">
+        <div style="flex:1">
+          <div style="{{lfSection}};margin-top:0">Developer tier</div>
+          <div style="display:flex;gap:8px"><sc-for list="{{lfTierChips}}" as="t" hint-placeholder-count="3"><div onClick="{{t.onClick}}" style="{{t.style}}">{{t.label}}</div></sc-for></div>
+        </div>
+        <div style="flex:1">
+          <div style="{{lfSection}};margin-top:0">Status</div>
+          <select value="{{lf.status}}" onChange="{{onLfStatus}}" style="{{lfSelect}}"><option value="active">Active</option><option value="draft">Draft</option></select>
+          <div style="font:500 10.5px Inter,sans-serif;color:#A99FBF;margin-top:5px">Only one launch can be active at a time.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:14px">
+        <div style="flex:1"><div style="{{lfLabelSm}}">Total units</div><input type="number" value="{{lf.units}}" onInput="{{onLfUnits}}" placeholder="e.g. 200" style="{{lfInput}}"></div>
+        <div style="flex:1.4"><div style="{{lfLabelSm}}">Notes (optional)</div><input value="{{lf.notes}}" onInput="{{onLfNotes}}" placeholder="Any additional context…" style="{{lfInput}}"></div>
+      </div>
+    </div>
+    <div style="padding:16px 24px;border-top:1px solid #ECE7F1;display:flex;gap:12px">
+      <button onClick="{{closeLaunchDrawer}}" style="flex:none;padding:0 20px;height:46px;border:1px solid #ECE7F1;border-radius:12px;background:#fff;color:#6B6285;font:700 13px Montserrat,sans-serif;cursor:pointer">Cancel</button>
+      <button onClick="{{submitLaunch}}" style="flex:1;height:46px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;font:700 13px Montserrat,sans-serif;cursor:pointer;transition:transform .12s" style-active="transform:scale(.985)">Create launch</button>
+    </div>
+  </div>
+</sc-if>
+
 <!-- toast -->
 <sc-if value="{{toast}}" hint-placeholder-val="{{false}}">
   <div style="position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#1E1145;color:#fff;padding:14px 24px;border-radius:12px;font:600 13.5px Inter,sans-serif;box-shadow:0 20px 50px -18px rgba(0,0,0,.5);z-index:120;animation:pop .2s ease both;display:flex;align-items:center;gap:10px"><span style="color:#B8963E">✓</span>{{toast}}</div>
@@ -1046,6 +1097,8 @@ class Component extends DCLogic {
     launchFilter: 'All',
     pfOpen: false,
     creatingLaunch: false,
+    launchDrawer: false,
+    lf: { name: '', dev: '', state: '', district: '', city: '', configs: [], priceMin: 1, priceMax: 3, tier: 'Branded', status: 'active', units: '', notes: '' },
     costTip: false,
     hoverProj: null,
     showPwd: false,
@@ -1057,8 +1110,8 @@ class Component extends DCLogic {
   weights = [25, 20, 20, 15, 10, 10];
   launches = [
     { id:'LX-2026-0142', name:'Borivali West — Phase 2', city:'Borivali West', config:'3 & 4 BHK', price:'₹2–4 Cr', dev:'Branded', status:'active', created:'28 Jun 2026', matches:8, shortlist:1 },
-    { id:'LX-2026-0138', name:'Kandivali West — Skyline', city:'Kandivali West', config:'2 & 3 BHK', price:'₹1.6–3 Cr', dev:'Branded', status:'active', created:'19 Jun 2026', matches:11, shortlist:4 },
-    { id:'LX-2026-0131', name:'Thane West — Lake Vista', city:'Thane West', config:'2 & 3 BHK', price:'₹1.4–2.6 Cr', dev:'Branded · Local', status:'active', created:'06 Jun 2026', matches:9, shortlist:3 },
+    { id:'LX-2026-0138', name:'Kandivali West — Skyline', city:'Kandivali West', config:'2 & 3 BHK', price:'₹1.6–3 Cr', dev:'Branded', status:'inactive', created:'19 Jun 2026', matches:11, shortlist:4 },
+    { id:'LX-2026-0131', name:'Thane West — Lake Vista', city:'Thane West', config:'2 & 3 BHK', price:'₹1.4–2.6 Cr', dev:'Branded · Local', status:'completed', created:'06 Jun 2026', matches:9, shortlist:3, soldPct:86 },
     { id:'LX-2026-0129', name:'Whitefield — ITPL Edge', city:'Whitefield', config:'3 & 4 BHK', price:'₹1.8–3.4 Cr', dev:'Branded', status:'draft', created:'02 Jun 2026', matches:0, shortlist:0 },
     { id:'LX-2026-0124', name:'Kharadi — Riverdale', city:'Kharadi', config:'2 & 3 BHK', price:'₹1.2–2.2 Cr', dev:'Branded', status:'draft', created:'24 May 2026', matches:0, shortlist:0 },
     { id:'LX-2026-0118', name:'Andheri West — Lokhandwala', city:'Andheri West', config:'3 & 4 BHK', price:'₹3–5.5 Cr', dev:'Branded', status:'completed', created:'11 May 2026', matches:14, shortlist:9, soldPct:92 },
@@ -1593,6 +1646,30 @@ class Component extends DCLogic {
       navDash: nav('dashboard'), navLaunches: nav('launches'), navRefresh: nav('refresh'), navMatch: nav('match'), navQuad: nav('quadrant'), navMicro: nav('micro'),
       launchSummary, launchFilterChips, launchList, launchEmpty: launchList.length === 0,
       newLaunch: () => this.newLaunch(),
+      launchDrawer: s.launchDrawer, lf: s.lf,
+      closeLaunchDrawer: () => this.closeLaunchDrawer(),
+      submitLaunch: () => this.submitLaunch(),
+      lfLabel: 'font:700 10px Inter,sans-serif;letter-spacing:.6px;color:#8A7FA8;text-transform:uppercase;margin-bottom:7px',
+      lfLabelSm: 'font:700 10px Inter,sans-serif;letter-spacing:.5px;color:#A99FBF;text-transform:uppercase;margin-bottom:6px',
+      lfSection: 'font:700 10px Inter,sans-serif;letter-spacing:.7px;color:var(--acc);text-transform:uppercase;margin:4px 0 10px',
+      lfInput: 'width:100%;height:42px;padding:0 13px;border:1px solid #ECE7F1;border-radius:11px;font:500 13.5px Inter,sans-serif;color:#1E1145;background:#FBFAFE',
+      lfSelect: 'width:100%;height:42px;padding:0 11px;border:1px solid #ECE7F1;border-radius:11px;font:600 13px Inter,sans-serif;color:#3B3357;background:#FBFAFE;cursor:pointer',
+      lfPriceLabel: '₹' + s.lf.priceMin + '.0 CR to ₹' + s.lf.priceMax + '.0 CR',
+      lfStateOpts: Object.keys(this.geoTree),
+      lfDistrictOpts: Object.keys(this.geoTree[s.lf.state] || {}),
+      lfCityOpts: Object.keys((this.geoTree[s.lf.state] || {})[s.lf.district] || {}),
+      onLfName: (e) => this.setLf('name', e.target.value),
+      onLfDev: (e) => this.setLf('dev', e.target.value),
+      onLfState: (e) => this.setLfState(e.target.value),
+      onLfDistrict: (e) => this.setLfDistrict(e.target.value),
+      onLfCity: (e) => this.setLf('city', e.target.value),
+      onLfMin: (e) => this.setLf('priceMin', e.target.value),
+      onLfMax: (e) => this.setLf('priceMax', e.target.value),
+      onLfUnits: (e) => this.setLf('units', e.target.value),
+      onLfNotes: (e) => this.setLf('notes', e.target.value),
+      onLfStatus: (e) => this.setLf('status', e.target.value),
+      lfConfigChips: ['1 BHK', '2 BHK', '3 BHK', '4 BHK'].map(c => { const on = s.lf.configs.includes(c); return { label: c.replace(' BHK', 'BHK'), onClick: () => this.toggleLfConfig(c), style: 'flex:1;text-align:center;padding:11px 0;border-radius:11px;cursor:pointer;font:600 13px Inter,sans-serif;border:1px solid ' + (on ? 'var(--acc)' : '#ECE7F1') + ';background:' + (on ? 'var(--acc)' : '#fff') + ';color:' + (on ? '#fff' : '#4B4568') }; }),
+      lfTierChips: ['Branded', 'Local', 'All'].map(t => { const on = s.lf.tier === t; return { label: t, onClick: () => this.setLf('tier', t), style: 'flex:1;text-align:center;padding:11px 0;border-radius:11px;cursor:pointer;font:600 13px Inter,sans-serif;border:1px solid ' + (on ? '#1E1145' : '#ECE7F1') + ';background:' + (on ? '#1E1145' : '#fff') + ';color:' + (on ? '#fff' : '#4B4568') }; }),
       creatingLaunch: s.creatingLaunch,
       curLaunchName: curLaunch.name, curLaunchMeta: curLaunch.config + ' · ' + curLaunch.price + ' · ' + curLaunch.dev,
       curLaunchStLabel: curMeta.label, curLaunchStColor: curMeta.color, curLaunchStBg: curMeta.bg,
@@ -1763,20 +1840,28 @@ class Component extends DCLogic {
   }
 
   toggleQuad(k) { const o = this.state.quadOpen; this.setState({ quadOpen: { ...o, [k]: !o[k] } }); }
-  setLaunchStatus(id, st) { this.launches = this.launches.map(l => l.id === id ? { ...l, status: st } : l); this.forceUpdate(); this.showToast('Launch marked ' + this.launchStatusMeta[st].label.toLowerCase()); }
+  demoteActives(exceptId) { this.launches = this.launches.map(l => (l.status === 'active' && l.id !== exceptId) ? { ...l, status: 'inactive' } : l); }
+  setLaunchStatus(id, st) { if (st === 'active') this.demoteActives(id); this.launches = this.launches.map(l => l.id === id ? { ...l, status: st } : l); const patch = st === 'active' ? { currentLaunchId: id } : {}; this.setState(patch); this.forceUpdate(); this.showToast('Launch marked ' + this.launchStatusMeta[st].label.toLowerCase()); }
   setLaunchFilter(f) { this.setState({ launchFilter: f }); }
   openLaunch(id) { const l = this.launches.find(x => x.id === id); this.setState({ currentLaunchId: id }); if (l) this.showToast('Viewing launch · ' + l.name); }
-  newLaunch() { this.setState({ creatingLaunch: true, screen: 'match' }); this.showToast('New launch — set criteria, then Find Matching CPs'); }
-  createLaunchFromCriteria(st) {
-    const s = this.state;
-    const cfg = s.configs.length ? s.configs.map(c => c.replace(' BHK', '')).sort().join(' & ') + ' BHK' : 'All typologies';
-    const dev = s.advDevTypes.length ? s.advDevTypes.join(' · ') : 'Any';
+  newLaunch() { this.setState({ launchDrawer: true, lf: { name: '', dev: '', state: '', district: '', city: '', configs: [], priceMin: 1, priceMax: 3, tier: 'Branded', status: 'active', units: '', notes: '' } }); }
+  closeLaunchDrawer() { this.setState({ launchDrawer: false }); }
+  setLf(k, v) { this.setState({ lf: { ...this.state.lf, [k]: v } }); }
+  setLfState(v) { this.setState({ lf: { ...this.state.lf, state: v, district: '', city: '' } }); }
+  setLfDistrict(v) { this.setState({ lf: { ...this.state.lf, district: v, city: '' } }); }
+  toggleLfConfig(c) { const cs = this.state.lf.configs; this.setLf('configs', cs.includes(c) ? cs.filter(x => x !== c) : [...cs, c]); }
+  submitLaunch() {
+    const f = this.state.lf;
+    if (!f.name.trim() || !f.state || !f.city) { this.showToast('Add project name, state and city'); return; }
+    const cfg = f.configs.length ? f.configs.map(c => c.replace(' BHK', '')).sort().join(' & ') + ' BHK' : '—';
     const seq = 143 + this.launches.filter(l => l.id.startsWith('LX-2026-01')).length;
     const id = 'LX-2026-0' + seq;
-    const l = { id, name: s.geoCity + ' — New Launch', city: s.geoCity, config: cfg, price: '₹' + s.priceMin + '–' + s.priceMax + ' Cr', dev, status: st, created: 'Today', matches: st === 'active' ? this.cpData.filter(c => this.matchCriteria(c)).length : 0, shortlist: 0 };
+    const st = f.status === 'draft' ? 'draft' : 'active';
+    if (st === 'active') this.demoteActives(id);
+    const l = { id, name: f.name.trim(), city: f.city, config: cfg, price: '₹' + f.priceMin + '–' + f.priceMax + ' Cr', dev: f.tier, status: st, created: 'Today', matches: 0, shortlist: 0, units: f.units, notes: f.notes };
     this.launches = [l, ...this.launches];
-    this.setState({ currentLaunchId: id, creatingLaunch: false });
-    this.showToast(st === 'draft' ? 'Draft launch saved · ' + l.name : 'Launch created · ' + l.name);
+    this.setState({ launchDrawer: false, screen: 'launches', currentLaunchId: st === 'active' ? id : this.state.currentLaunchId });
+    this.showToast((st === 'draft' ? 'Draft saved · ' : 'Launch created · ') + l.name);
   }
   toggleConfig(c) { const has = this.state.configs.includes(c); this.setState({ configs: has ? this.state.configs.filter(x => x !== c) : [...this.state.configs, c] }); }
   toggleDev(t) { const has = this.state.advDevTypes.includes(t); this.setState({ advDevTypes: has ? this.state.advDevTypes.filter(x => x !== t) : [...this.state.advDevTypes, t] }); }
