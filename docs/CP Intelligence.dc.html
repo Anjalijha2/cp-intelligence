@@ -1639,7 +1639,7 @@ class Component extends DCLogic {
       verifiedToggleX: s.reraOnly ? '18px' : '2px',
       resetFilters: () => this.setState({ geoState: 'Maharashtra', geoDistrict: 'Mumbai Suburban', geoCity: 'Borivali West', geoSearch: '', pins: ['400092', '400091', '400093'], configs: ['3 BHK', '4 BHK'], priceMin: 2, priceMax: 4, advDevTypes: ['Branded'], advMinProjects: 3, advActive: 180, reraOnly: false }),
 
-      runSearch: () => { this.setState({ searchState: 'loading' }); clearTimeout(this._st); this._st = setTimeout(() => this.setState({ searchState: 'results' }), 1000); },
+      runSearch: () => { this.setState({ searchState: 'loading' }); clearTimeout(this._st); this._st = setTimeout(() => { this.setState({ searchState: 'results' }); if (this.state.creatingLaunch) this.createLaunchFromCriteria('active'); }, 1000); },
       displayRows, resultCount: displayRows.length, emptyResults: displayRows.length === 0,
       summaryLine,
       stop: (e) => { if (e && e.stopPropagation) e.stopPropagation(); },
