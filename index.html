@@ -1020,12 +1020,22 @@
     </div>
     <div style="flex:1;overflow:auto;padding:16px 20px">
       <sc-if value="{{shortlistEmpty}}" hint-placeholder-val="{{false}}"><div style="text-align:center;padding:44px 20px;color:#8A7FA8;font:500 13px Inter,sans-serif">No CPs shortlisted yet. Add them from the matches or a profile.</div></sc-if>
-      <sc-for list="{{shortlistItems}}" as="sl" hint-placeholder-count="2">
-        <div style="display:flex;align-items:center;gap:12px;padding:12px;border:1px solid #F0ECF6;border-radius:12px;margin-bottom:10px">
-          <div onClick="{{sl.onOpen}}" style="cursor:pointer"><dc-import name="ScoreRing" score="{{sl.score}}" size="42" variant="{{scoreStyle}}" hint-size="42px,42px"></dc-import></div>
-          <div onClick="{{sl.onOpen}}" style="flex:1;min-width:0;cursor:pointer"><div style="font:600 13.5px Inter,sans-serif;color:#1E1145">{{sl.firm}}</div><div style="font:500 11px Inter,sans-serif;color:#A99FBF">{{sl.xr}} · {{sl.quadLabel}}</div></div>
-          <div onClick="{{sl.onRemove}}" style="cursor:pointer;font:600 11.5px Inter,sans-serif;color:#DC2626;padding:6px 10px;border:1px solid #F3D3D3;border-radius:8px" style-hover="background:#FDECEC">Remove</div>
-        </div>
+      <sc-for list="{{shortlistGroups}}" as="g" hint-placeholder-count="3">
+        <div style="display:flex;align-items:center;gap:8px;margin:6px 0 10px"><span style="width:8px;height:8px;border-radius:50%;background:{{g.color}}"></span><span style="font:700 12px Montserrat,sans-serif;color:{{g.color}}">{{g.label}}</span><span style="font:700 10px Inter,sans-serif;color:#6B6285;background:#F5F2F9;padding:2px 8px;border-radius:20px">{{g.count}}</span></div>
+        <sc-for list="{{g.items}}" as="sl" hint-placeholder-count="2">
+          <div style="border:1px solid #F0ECF6;border-radius:12px;margin-bottom:10px;padding:12px">
+            <div style="display:flex;align-items:center;gap:12px">
+              <div onClick="{{sl.onOpen}}" style="cursor:pointer"><dc-import name="ScoreRing" score="{{sl.score}}" size="40" variant="{{scoreStyle}}" hint-size="40px,40px"></dc-import></div>
+              <div onClick="{{sl.onOpen}}" style="flex:1;min-width:0;cursor:pointer"><div style="font:600 13px Inter,sans-serif;color:#1E1145">{{sl.firm}}</div><div style="font:500 11px Inter,sans-serif;color:#A99FBF">{{sl.xr}} · {{sl.quadLabel}}</div></div>
+              <div onClick="{{sl.onRemove}}" style="cursor:pointer;font:600 11px Inter,sans-serif;color:#DC2626;padding:5px 9px;border:1px solid #F3D3D3;border-radius:8px" style-hover="background:#FDECEC">Remove</div>
+            </div>
+            <div style="display:flex;gap:6px;margin-top:10px">
+              <div onClick="{{sl.setHigh}}" style="{{sl.priHigh}}">High</div>
+              <div onClick="{{sl.setMed}}" style="{{sl.priMed}}">Medium</div>
+              <div onClick="{{sl.setLow}}" style="{{sl.priLow}}">Low</div>
+            </div>
+          </div>
+        </sc-for>
       </sc-for>
     </div>
     <div style="padding:16px 20px;border-top:1px solid #ECE7F1"><button onClick="{{exportShortlist}}" style="width:100%;height:46px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;font:700 13px Montserrat,sans-serif;cursor:pointer;transition:transform .12s" style-active="transform:scale(.985)">↓ Export shortlist</button></div>
@@ -1137,6 +1147,7 @@ class Component extends DCLogic {
     selectedXR: 'XR33921',
     popoverXR: null,
     shortlist: ['XR33921'],
+    shortlistPriority: { XR33921: 'high' },
     shortlistOpen: false,
     hoverDot: null,
     bellOpen: false,
@@ -1388,14 +1399,17 @@ class Component extends DCLogic {
   }
   toggleShort(xr, firm) {
     const has = this.state.shortlist.includes(xr);
-    this.setState({ shortlist: has ? this.state.shortlist.filter(x => x !== xr) : [...this.state.shortlist, xr] });
+    const pri = { ...this.state.shortlistPriority };
+    if (has) delete pri[xr]; else if (!pri[xr]) pri[xr] = 'medium';
+    this.setState({ shortlist: has ? this.state.shortlist.filter(x => x !== xr) : [...this.state.shortlist, xr], shortlistPriority: pri });
     this.showToast(has ? (firm + ' removed from shortlist') : (firm + ' added to shortlist'));
   }
+  setShortlistPriority(xr, level) { this.setState({ shortlistPriority: { ...this.state.shortlistPriority, [xr]: level } }); }
   tieUp(xr, firm) { this.showToast('Tie-up request sent to ' + firm); }
   openBulk(key) { this.setState({ bulkOpen: key, bulkSel: [] }); }
   closeBulk() { this.setState({ bulkOpen: null, bulkSel: [] }); }
   toggleBulk(xr) { const b = this.state.bulkSel; this.setState({ bulkSel: b.includes(xr) ? b.filter(x => x !== xr) : [...b, xr] }); }
-  addBulkToShortlist() { const add = this.state.bulkSel.filter(x => !this.state.shortlist.includes(x)); this.setState({ shortlist: [...this.state.shortlist, ...add], bulkOpen: null, bulkSel: [] }); this.showToast(add.length + ' CP' + (add.length === 1 ? '' : 's') + ' added to shortlist'); }
+  addBulkToShortlist() { const add = this.state.bulkSel.filter(x => !this.state.shortlist.includes(x)); const pri = { ...this.state.shortlistPriority }; add.forEach(x => { if (!pri[x]) pri[x] = 'medium'; }); this.setState({ shortlist: [...this.state.shortlist, ...add], shortlistPriority: pri, bulkOpen: null, bulkSel: [] }); this.showToast(add.length + ' CP' + (add.length === 1 ? '' : 's') + ' added to shortlist'); }
   reraDate(cp) { return cp.rera === 'ok' ? (cp.reraNum.split('valid to ')[1] || 'current') : null; }
   makeBreakdown(cp) { const sw = this.state.scoreWeights; return this.labels.map((l, i) => { const frac = cp.got[i] / this.weights[i]; return { label: l, sub: this.subs[i], weight: sw[i], got: Math.round(frac * sw[i]), fill: Math.round(frac * 100) + '%' }; }); }
   dynScore(cp) { const sw = this.state.scoreWeights; return Math.round(sw.reduce((a, w, i) => a + (cp.got[i] / this.weights[i]) * w, 0)); }
@@ -1809,10 +1823,21 @@ class Component extends DCLogic {
     const searchResults = q ? this.cpData.filter(c => c.firm.toLowerCase().includes(q) || c.xr.toLowerCase().includes(q)).slice(0, 6).map(c => ({ firm: c.firm, xr: c.xr, score: c.score, onClick: () => this.openProfile(c.xr) })) : [];
 
     // shortlist
-    const shortlistItems = s.shortlist.map(xr => this.cpData.find(c => c.xr === xr)).filter(Boolean).map(c => ({
-      firm: c.firm, xr: c.xr, score: c.score, quadLabel: this.quadMeta[c.quad].label,
+    const priMeta = { high: { label: 'High priority', color: '#DC2626', bg: '#FDECEC' }, medium: { label: 'Medium priority', color: '#D97706', bg: '#FEF0E1' }, low: { label: 'Low priority', color: '#1E8E5A', bg: '#E4F3EC' } };
+    const priChip = (xr, level, on) => 'flex:1;text-align:center;padding:5px 0;border-radius:7px;cursor:pointer;font:700 10px Inter,sans-serif;text-transform:uppercase;letter-spacing:.4px;transition:all .12s;border:1px solid ' + (on ? priMeta[level].color : '#ECE7F1') + ';background:' + (on ? priMeta[level].bg : '#fff') + ';color:' + (on ? priMeta[level].color : '#A99FBF');
+    const mkShort = (c) => { const lvl = s.shortlistPriority[c.xr] || 'medium'; return {
+      firm: c.firm, xr: c.xr, score: this.dynScore(c), quadLabel: this.quadMeta[c.quad].label, level: lvl,
       onOpen: () => this.openProfile(c.xr), onRemove: () => this.toggleShort(c.xr, c.firm),
-    }));
+      priHigh: priChip(c.xr, 'high', lvl === 'high'), priMed: priChip(c.xr, 'medium', lvl === 'medium'), priLow: priChip(c.xr, 'low', lvl === 'low'),
+      setHigh: () => this.setShortlistPriority(c.xr, 'high'), setMed: () => this.setShortlistPriority(c.xr, 'medium'), setLow: () => this.setShortlistPriority(c.xr, 'low'),
+    }; };
+    const slCps = s.shortlist.map(xr => this.cpData.find(c => c.xr === xr)).filter(Boolean);
+    const shortlistItems = slCps.map(mkShort);
+    const shortlistGroups = ['high', 'medium', 'low'].map(level => ({
+      level, label: priMeta[level].label, color: priMeta[level].color, bg: priMeta[level].bg,
+      items: slCps.filter(c => (s.shortlistPriority[c.xr] || 'medium') === level).map(mkShort),
+      count: slCps.filter(c => (s.shortlistPriority[c.xr] || 'medium') === level).length,
+    })).filter(g => g.count > 0);
 
     const alerts = [
       { text: 'BR Real Estate — RERA expiring in 30 days', time: 'Today · 09:14', dot: '#D97706', onClick: () => this.openProfile('XR022413') },
@@ -1998,7 +2023,7 @@ class Component extends DCLogic {
       shortlistOpen: s.shortlistOpen,
       openShortlistPanel: () => this.setState({ shortlistOpen: true }),
       closeShortlist: () => this.setState({ shortlistOpen: false }),
-      shortlistItems, shortlistEmpty: s.shortlist.length === 0,
+      shortlistItems, shortlistGroups, shortlistEmpty: s.shortlist.length === 0,
 
       complianceGroups: (() => {
         const list = s.complianceFilter === 'All' ? this.complianceAlerts : this.complianceAlerts.filter(a => a.cat === s.complianceFilter);
