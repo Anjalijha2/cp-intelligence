@@ -385,9 +385,19 @@
               <div onClick="{{setActive6}}" style="{{act6Style}}">Last 6 months</div>
               <div onClick="{{setActive12}}" style="{{act12Style}}">Last 12 months</div>
             </div>
-            <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0 14px">
               <span style="font:600 13px Inter,sans-serif">RERA valid only</span>
               <div onClick="{{toggleRera}}" style="width:42px;height:24px;border-radius:14px;background:{{reraToggleBg}};position:relative;cursor:pointer;transition:background .2s"><div style="position:absolute;top:2px;left:{{reraToggleX}};width:20px;height:20px;background:#fff;border-radius:50%;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)"></div></div>
+            </div>
+            <div style="border-top:1px solid #ECE7F1;padding-top:14px">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><span style="font:600 11px Inter,sans-serif;letter-spacing:.8px;color:#8A7FA8;text-transform:uppercase">Score parameters</span><span style="font:600 10.5px Inter,sans-serif;color:#A99FBF">total {{scoreWeightTotal}}</span></div>
+              <sc-for list="{{scoreParamSliders}}" as="p" hint-placeholder-count="6">
+                <div style="margin-bottom:11px">
+                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><span style="font:500 12px Inter,sans-serif;color:#4B4568">{{p.label}}</span><span style="font:700 11.5px Montserrat,sans-serif;color:var(--acc)">{{p.value}}</span></div>
+                  <input type="range" min="0" max="40" step="1" value="{{p.value}}" onInput="{{p.onInput}}" style="width:100%;accent-color:var(--acc)">
+                </div>
+              </sc-for>
+              <div style="font:500 10.5px Inter,sans-serif;color:#A99FBF;margin-top:2px">Adjust weights — scores &amp; ranking recalculate live.</div>
             </div>
           </div>
         </sc-if>
@@ -424,17 +434,28 @@
 
         <sc-if value="{{showResults}}" hint-placeholder-val="{{true}}">
         <div>
-          <div style="display:flex;align-items:center;gap:10px;margin:18px 0 14px;font:600 13px Inter,sans-serif;color:#6B6285"><span style="background:#F1EDFA;color:#5B21B6;padding:4px 11px;border-radius:8px;font-weight:700">{{resultCount}} matches</span> scored against {{summaryLine}}</div>
-          <sc-for list="{{displayRows}}" as="item" hint-placeholder-count="8">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin:18px 0 12px;flex-wrap:wrap;gap:12px">
+            <div style="display:flex;align-items:center;gap:10px;font:600 13px Inter,sans-serif;color:#6B6285"><span style="background:#F1EDFA;color:#5B21B6;padding:4px 11px;border-radius:8px;font-weight:700">{{resultCount}} matches</span> scored against {{summaryLine}}</div>
+            <div style="display:flex;gap:8px">
+              <div onClick="{{showList}}" style="{{tabListStyle}}">Matching Channel Partners</div>
+              <div onClick="{{showQuad}}" style="{{tabQuadStyle}}">Quadrant View</div>
+            </div>
+          </div>
+
+          <sc-if value="{{mtList}}" hint-placeholder-val="{{true}}">
+          <div>
+          <sc-for list="{{matchGroups}}" as="g" hint-placeholder-count="4">
+            <div style="display:flex;align-items:center;gap:9px;margin:18px 0 12px"><span style="width:9px;height:9px;border-radius:50%;background:{{g.color}}"></span><span style="font:700 14px Montserrat,sans-serif;color:{{g.color}}">{{g.label}}</span><span style="font:700 10.5px Inter,sans-serif;color:#6B6285;background:#F5F2F9;padding:2px 9px;border-radius:20px">{{g.count}}</span></div>
+            <sc-for list="{{g.rows}}" as="item" hint-placeholder-count="4">
             <div data-pop="1" style="background:#fff;border:1px solid {{item.cardBorder}};border-radius:14px;padding:16px 20px;margin-bottom:11px;box-shadow:var(--cardShadow);transition:box-shadow .15s,transform .15s,border-color .15s;animation:{{item.anim}}">
-              <div onClick="{{item.onRow}}" style="display:flex;align-items:center;gap:18px;cursor:pointer" style-hover="opacity:.96">
+              <div style="display:flex;align-items:center;gap:18px">
                 <div style="position:relative;flex:none" onClick="{{item.onScore}}">
                   <div style="cursor:pointer">
                     <dc-import name="ScoreRing" score="{{item.score}}" size="54" variant="{{scoreStyle}}" hint-size="54px,54px"></dc-import>
                   </div>
                   <div style="font:700 9px Inter,sans-serif;color:{{item.whyColor}};text-align:center;margin-top:3px;letter-spacing:.3px;cursor:pointer">{{item.whyLabel}}</div>
                 </div>
-                <div style="flex:1;min-width:0">
+                <div onClick="{{item.onRow}}" style="flex:1;min-width:0;cursor:pointer">
                   <div style="display:flex;align-items:center;gap:10px">
                     <span style="font:700 15.5px Montserrat,sans-serif;color:#1E1145">{{item.firm}}</span>
                     <span style="font:600 11.5px Inter,sans-serif;color:#A99FBF">{{item.xr}}</span>
@@ -446,9 +467,14 @@
                     </sc-for>
                   </div>
                 </div>
-                <div style="flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:10px">
+                <div style="flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:9px">
                   <span style="font:600 11.5px Inter,sans-serif;padding:5px 12px;border-radius:20px;background:{{item.quadBg}};color:{{item.quadColor}}">{{item.quadLabel}}</span>
-                  <div onClick="{{item.onToggleShort}}" style="{{item.shortStyle}}" style-active="transform:scale(.95)">{{item.shortLabel}}</div>
+                  <div style="display:flex;gap:6px">
+                    <div onClick="{{item.onCall}}" title="Call" style="width:30px;height:30px;border-radius:8px;border:1px solid #ECE7F1;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px">📞</div>
+                    <div onClick="{{item.onEmail}}" title="Email" style="width:30px;height:30px;border-radius:8px;border:1px solid #ECE7F1;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px">✉</div>
+                    <div onClick="{{item.onTieUp}}" style="padding:0 12px;height:30px;border-radius:8px;border:1px solid #D9CEF3;background:#F6F2FE;color:#5B21B6;display:flex;align-items:center;font:600 11.5px Inter,sans-serif;cursor:pointer">Tie up</div>
+                    <div onClick="{{item.onToggleShort}}" style="{{item.shortStyle}}" style-active="transform:scale(.95)">{{item.shortLabel}}</div>
+                  </div>
                 </div>
               </div>
               <sc-if value="{{item.popoverOpen}}" hint-placeholder-val="{{false}}">
@@ -470,6 +496,10 @@
                 </div>
               </sc-if>
             </div>
+            </sc-for>
+            <sc-if value="{{g.hasMore}}" hint-placeholder-val="{{false}}">
+              <div onClick="{{g.onMore}}" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:11px;border-radius:12px;cursor:pointer;font:600 12.5px Inter,sans-serif;color:{{g.color}};background:#FAF8FD;border:1px dashed #D9CEF3;margin-bottom:8px" style-hover="background:#F4EFFC"><span style="width:20px;height:20px;border-radius:50%;background:#EDE7F7;display:flex;align-items:center;justify-content:center;font:700 13px Inter,sans-serif">+</span>{{g.moreLabel}}</div>
+            </sc-if>
           </sc-for>
           <sc-if value="{{emptyResults}}" hint-placeholder-val="{{false}}">
             <div style="text-align:center;padding:64px 20px;animation:fadeIn .25s ease both">
@@ -478,6 +508,27 @@
               <div style="font:500 13px Inter,sans-serif;color:#8A7FA8;margin-top:6px;max-width:380px;margin-left:auto;margin-right:auto">Try widening the price band or adding pin codes.</div>
               <button onClick="{{resetFilters}}" style="margin-top:18px;height:42px;padding:0 22px;border:1px solid var(--acc);background:#fff;color:#5B21B6;border-radius:11px;font:700 13px Montserrat,sans-serif;cursor:pointer;transition:transform .12s" style-active="transform:scale(.97)">Reset filters</button>
             </div>
+          </sc-if>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{mtQuad}}" hint-placeholder-val="{{false}}">
+          <div style="display:grid;grid-template-columns:1fr 1fr;border:1px solid #ECE7F1;border-radius:14px;overflow:hidden;margin-top:6px">
+            <sc-for list="{{quadCells}}" as="cell" hint-placeholder-count="4">
+              <div style="{{cell.cellStyle}}">
+                <div style="margin-bottom:10px"><div style="font:700 13px Montserrat,sans-serif;color:{{cell.color}}">{{cell.title}}</div><div style="font:500 10.5px Inter,sans-serif;color:#A99FBF;margin-top:1px">{{cell.sub}}</div></div>
+                <sc-for list="{{cell.firms}}" as="f" hint-placeholder-count="3">
+                  <div onClick="{{f.onClick}}" style="{{f.rowStyle}}">
+                    <div style="flex:1;min-width:0"><div style="font:600 12.5px Inter,sans-serif;color:#1E1145;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{f.name}}</div><div style="font:500 10px Inter,sans-serif;color:#A99FBF">{{f.xr}}</div></div>
+                    <span style="font:800 12.5px Montserrat,sans-serif;color:#1E1145;background:#fff;border:1px solid #E4DEF0;border-radius:7px;padding:3px 8px;min-width:32px;text-align:center;flex:none">{{f.score}}</span>
+                  </div>
+                </sc-for>
+                <sc-if value="{{cell.hasMore}}" hint-placeholder-val="{{true}}">
+                  <div onClick="{{cell.onToggle}}" style="{{cell.toggleStyle}}"><span style="width:18px;height:18px;border-radius:50%;background:{{cell.color}}22;color:{{cell.color}};display:flex;align-items:center;justify-content:center;font:700 13px Inter,sans-serif;flex:none">{{cell.toggleIcon}}</span><span>{{cell.toggleLabel}}</span></div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
           </sc-if>
         </div>
         </sc-if>
@@ -1036,6 +1087,38 @@
   </div>
 </sc-if>
 
+<!-- BULK SHORTLIST POPUP (CR-12) -->
+<sc-if value="{{bulkOpen}}" hint-placeholder-val="{{false}}">
+  <div onClick="{{closeBulk}}" style="position:fixed;inset:0;background:rgba(30,17,69,.42);z-index:100;animation:fadeIn .2s ease both"></div>
+  <div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(680px,92vw);max-height:82vh;background:#fff;border-radius:18px;z-index:101;box-shadow:0 40px 90px -30px rgba(30,17,69,.6);display:flex;flex-direction:column;overflow:hidden;animation:pop .18s ease both">
+    <div style="padding:20px 24px;border-bottom:1px solid #ECE7F1;display:flex;align-items:center;justify-content:space-between">
+      <div><div style="font:800 17px Montserrat,sans-serif">{{bulkLabel}} — all partners</div><div style="font:500 12px Inter,sans-serif;color:#8A7FA8;margin-top:2px">Select partners to add to the launch shortlist.</div></div>
+      <div onClick="{{closeBulk}}" style="cursor:pointer;font-size:18px;color:#8A7FA8">✕</div>
+    </div>
+    <div style="display:grid;grid-template-columns:28px 2fr .8fr 1.4fr 1fr;gap:12px;padding:10px 24px;font:600 10px Inter,sans-serif;letter-spacing:.5px;color:#A99FBF;text-transform:uppercase;border-bottom:1px solid #F2EEF7">
+      <div></div><div>Channel partner</div><div>Score</div><div>Category</div><div>Status</div>
+    </div>
+    <div style="flex:1;overflow:auto">
+      <sc-for list="{{bulkRows}}" as="b" hint-placeholder-count="6">
+        <div onClick="{{b.onToggle}}" style="{{b.rowStyle}}">
+          <div style="{{b.boxStyle}}"><sc-if value="{{b.checked}}" hint-placeholder-val="{{true}}">✓</sc-if></div>
+          <div style="min-width:0"><div style="font:600 13px Inter,sans-serif;color:#1E1145">{{b.firm}}</div><div style="font:500 10.5px Inter,sans-serif;color:#A99FBF">{{b.xr}}</div></div>
+          <div style="font:800 13px Montserrat,sans-serif;color:#1E1145">{{b.score}}</div>
+          <div><span style="font:700 9.5px Inter,sans-serif;text-transform:uppercase;padding:3px 8px;border-radius:20px;background:{{b.catBg}};color:{{b.catColor}}">{{b.catLabel}}</span></div>
+          <div style="font:600 11.5px Inter,sans-serif;color:#6B6285">{{b.status}}</div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="padding:16px 24px;border-top:1px solid #ECE7F1;display:flex;align-items:center;justify-content:space-between">
+      <div style="font:600 12.5px Inter,sans-serif;color:#6B6285">{{bulkSelCount}} selected</div>
+      <div style="display:flex;gap:10px">
+        <button onClick="{{closeBulk}}" style="height:44px;padding:0 18px;border:1px solid #ECE7F1;border-radius:11px;background:#fff;color:#6B6285;font:700 13px Montserrat,sans-serif;cursor:pointer">Cancel</button>
+        <button onClick="{{addBulkToShortlist}}" style="height:44px;padding:0 22px;border:none;border-radius:11px;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;font:700 13px Montserrat,sans-serif;cursor:pointer">Add to launch shortlist</button>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
 <!-- toast -->
 <sc-if value="{{toast}}" hint-placeholder-val="{{false}}">
   <div style="position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#1E1145;color:#fff;padding:14px 24px;border-radius:12px;font:600 13.5px Inter,sans-serif;box-shadow:0 20px 50px -18px rgba(0,0,0,.5);z-index:120;animation:pop .2s ease both;display:flex;align-items:center;gap:10px"><span style="color:#B8963E">✓</span>{{toast}}</div>
@@ -1072,6 +1155,10 @@ class Component extends DCLogic {
     reraOnly: false,
     sortBy: 'score',
     sortOpen: false,
+    scoreWeights: [25, 20, 20, 15, 10, 10],
+    matchTab: 'list',
+    bulkOpen: null,
+    bulkSel: [],
     dirSearch: '',
     dirQuad: 'All',
     dirPage: 0,
@@ -1304,8 +1391,15 @@ class Component extends DCLogic {
     this.setState({ shortlist: has ? this.state.shortlist.filter(x => x !== xr) : [...this.state.shortlist, xr] });
     this.showToast(has ? (firm + ' removed from shortlist') : (firm + ' added to shortlist'));
   }
+  tieUp(xr, firm) { this.showToast('Tie-up request sent to ' + firm); }
+  openBulk(key) { this.setState({ bulkOpen: key, bulkSel: [] }); }
+  closeBulk() { this.setState({ bulkOpen: null, bulkSel: [] }); }
+  toggleBulk(xr) { const b = this.state.bulkSel; this.setState({ bulkSel: b.includes(xr) ? b.filter(x => x !== xr) : [...b, xr] }); }
+  addBulkToShortlist() { const add = this.state.bulkSel.filter(x => !this.state.shortlist.includes(x)); this.setState({ shortlist: [...this.state.shortlist, ...add], bulkOpen: null, bulkSel: [] }); this.showToast(add.length + ' CP' + (add.length === 1 ? '' : 's') + ' added to shortlist'); }
   reraDate(cp) { return cp.rera === 'ok' ? (cp.reraNum.split('valid to ')[1] || 'current') : null; }
-  makeBreakdown(cp) { return this.labels.map((l, i) => ({ label: l, sub: this.subs[i], weight: this.weights[i], got: cp.got[i], fill: Math.round(cp.got[i] / this.weights[i] * 100) + '%' })); }
+  makeBreakdown(cp) { const sw = this.state.scoreWeights; return this.labels.map((l, i) => { const frac = cp.got[i] / this.weights[i]; return { label: l, sub: this.subs[i], weight: sw[i], got: Math.round(frac * sw[i]), fill: Math.round(frac * 100) + '%' }; }); }
+  dynScore(cp) { const sw = this.state.scoreWeights; return Math.round(sw.reduce((a, w, i) => a + (cp.got[i] / this.weights[i]) * w, 0)); }
+  setScoreWeight(i, v) { const sw = this.state.scoreWeights.slice(); sw[i] = Number(v); this.setState({ scoreWeights: sw }); }
   makeSummary(cp) {
     const active = cp.proven >= 70 ? 'very active' : 'active';
     const rera = cp.rera === 'ok' ? ('RERA valid to ' + this.reraDate(cp)) : 'RERA expiring in 30 days';
@@ -1394,9 +1488,13 @@ class Component extends DCLogic {
     const open = this.state.popoverXR === cp.xr;
     return {
       ...cp,
+      score: this.dynScore(cp),
       quadLabel: q.label, quadColor: q.color, quadBg: q.bg,
       breakdown: this.makeBreakdown(cp), summary: this.makeSummary(cp),
       popoverOpen: open,
+      onTieUp: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.tieUp(cp.xr, cp.firm); },
+      onCall: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.showToast('Calling ' + cp.firm + ' · ' + cp.phone); },
+      onEmail: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.showToast('Email drafted to ' + cp.email); },
       cardBorder: open ? 'var(--acc)' : '#ECE7F1',
       whyLabel: open ? 'HIDE' : 'WHY?',
       whyColor: open ? '#8B5CF6' : '#B8963E',
@@ -1424,7 +1522,7 @@ class Component extends DCLogic {
     const cpCity = (cp.markets || '').split('·')[0].trim();
     const tied = this.launches.filter(l => l.city && (cpCity.startsWith(l.city.split(' ')[0]) || (cp.markets || '').includes(l.city.split(' ')[0])));
     return {
-      ...cp, quadLabel: q.label, breakdown: this.makeBreakdown(cp), completeness,
+      ...cp, score: this.dynScore(cp), quadLabel: q.label, breakdown: this.makeBreakdown(cp), completeness,
       vdnb, vdnbColor: vc.c, vdnbBg: vc.bg, vdnbLabel: vc.lbl, newInMarket: this.newSet.includes(cp.xr),
       reraChipText: reraOk ? 'Valid' : 'Expiring 30d', reraChipBg: reraOk ? '#E4F3EC' : '#FEF0E1', reraChipColor: reraOk ? '#1E8E5A' : '#D97706',
       gstChipText: cp.gst ? 'Active' : 'Not on file', gstChipBg: cp.gst ? '#E4F3EC' : '#FEF0E1', gstChipColor: cp.gst ? '#1E8E5A' : '#D97706',
@@ -1522,13 +1620,41 @@ class Component extends DCLogic {
     // filtered + ranked
     const sortMeta = { score: 'Match score', active: 'Recently active', projects: 'Most projects', name: 'Name A–Z' };
     const sortFns = {
-      score: (a, b) => b.score - a.score,
+      score: (a, b) => this.dynScore(b) - this.dynScore(a),
       active: (a, b) => a.lastActiveDays - b.lastActiveDays,
       projects: (a, b) => b.projectsDone - a.projectsDone,
       name: (a, b) => a.firm.localeCompare(b.firm),
     };
     const matched = this.cpData.filter(cp => this.matchCriteria(cp)).sort(sortFns[s.sortBy] || sortFns.score);
     const displayRows = matched.map((cp, i) => { const r = this.buildRow(cp); r.anim = 'fadeUp .34s cubic-bezier(.2,.8,.2,1) both ' + (i * 45) + 'ms'; return r; });
+    // CR-09: group matches into the 4 quadrant categories
+    const GRP_CAP = 4;
+    const grpOrder = ['pf', 'pl', 'tv', 'lo'];
+    const matchGroups = grpOrder.map(key => {
+      const qm2 = this.quadMeta[key];
+      const rows = displayRows.filter(r => r.quad === key);
+      return {
+        key, label: qm2.label, color: qm2.color, bg: qm2.bg, count: rows.length,
+        rows: rows.slice(0, GRP_CAP), hasMore: rows.length > GRP_CAP, moreLabel: '+' + (rows.length - GRP_CAP) + ' more in ' + qm2.label,
+        onMore: () => this.openBulk(key), empty: rows.length === 0,
+      };
+    }).filter(g => g.count > 0);
+    // CR-12: bulk popup rows for the open category
+    const bulkRows = s.bulkOpen ? matched.filter(cp => cp.quad === s.bulkOpen).map(cp => {
+      const m2 = this.quadMeta[cp.quad]; const on = s.bulkSel.includes(cp.xr); const inSl = s.shortlist.includes(cp.xr);
+      return { xr: cp.xr, firm: cp.firm, score: this.dynScore(cp), catLabel: m2.label, catColor: m2.color, catBg: m2.bg,
+        status: inSl ? 'Shortlisted' : (cp.rera === 'ok' ? 'Verified' : 'RERA expiring'),
+        checked: on, onToggle: () => this.toggleBulk(cp.xr),
+        rowStyle: 'display:grid;grid-template-columns:28px 2fr .8fr 1.4fr 1fr;gap:12px;align-items:center;padding:11px 14px;border-bottom:1px solid #F4F1FA;cursor:pointer;background:' + (on ? '#F6F2FE' : '#fff'),
+        boxStyle: 'width:18px;height:18px;border-radius:5px;border:1.5px solid ' + (on ? 'var(--acc)' : '#CFC6E4') + ';background:' + (on ? 'var(--acc)' : '#fff') + ';display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff' };
+    }) : [];
+    const bulkMeta = s.bulkOpen ? this.quadMeta[s.bulkOpen] : null;
+    // CR-11: score weight sliders
+    const scoreParamSliders = this.labels.map((l, i) => ({ label: l, value: s.scoreWeights[i], onInput: (e) => this.setScoreWeight(i, e.target.value) }));
+    const scoreWeightTotal = s.scoreWeights.reduce((a, b) => a + b, 0);
+    // CR-10: tabs
+    const mtList = s.matchTab !== 'quad';
+    const tabStyle = (on) => 'padding:9px 16px;border-radius:10px;cursor:pointer;font:700 12.5px Montserrat,sans-serif;transition:all .15s;' + (on ? 'background:#241350;color:#fff' : 'background:#F5F2F9;color:#6B6285');
 
     // criteria controls
     const chip = (on) => 'padding:8px 14px;border-radius:9px;cursor:pointer;font:600 13px Inter,sans-serif;transition:transform .1s;border:1px solid ' + (on ? 'var(--acc)' : '#ECE7F1') + ';background:' + (on ? 'var(--acc)' : '#fff') + ';color:' + (on ? '#fff' : '#8A7FA8');
@@ -1829,6 +1955,13 @@ class Component extends DCLogic {
 
       runSearch: () => { this.setState({ searchState: 'loading' }); clearTimeout(this._st); this._st = setTimeout(() => { this.setState({ searchState: 'results' }); if (this.state.creatingLaunch) this.createLaunchFromCriteria('active'); }, 1000); },
       displayRows, resultCount: displayRows.length, emptyResults: displayRows.length === 0,
+      matchGroups,
+      matchTab: s.matchTab, mtList, mtQuad: !mtList,
+      tabListStyle: tabStyle(mtList), tabQuadStyle: tabStyle(!mtList),
+      showList: () => this.setState({ matchTab: 'list' }), showQuad: () => this.setState({ matchTab: 'quad' }),
+      scoreParamSliders, scoreWeightTotal,
+      bulkOpen: !!s.bulkOpen, bulkRows, bulkLabel: bulkMeta ? bulkMeta.label : '', bulkSelCount: s.bulkSel.length,
+      closeBulk: () => this.closeBulk(), addBulkToShortlist: () => this.addBulkToShortlist(),
       summaryLine,
       stop: (e) => { if (e && e.stopPropagation) e.stopPropagation(); },
       scoreStyle: this.props.scoreStyle || 'Ring',
