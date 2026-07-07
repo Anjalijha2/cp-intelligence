@@ -402,7 +402,14 @@
             <div style="font:600 13px Inter,sans-serif;color:var(--acc);margin-top:4px">Ranked shortlist on day one — not day 20.</div>
           </div>
           <div style="display:flex;align-items:center;gap:14px">
-            <div style="display:flex;align-items:center;gap:8px;font:600 13px Inter,sans-serif;color:#6B6285;cursor:pointer">Sort by: <span style="color:#1E1145">Match score</span> ⌄</div>
+            <div data-sort="1" style="position:relative">
+              <div onClick="{{toggleSort}}" style="display:flex;align-items:center;gap:8px;font:600 13px Inter,sans-serif;color:#6B6285;cursor:pointer">Sort by: <span style="color:#1E1145">{{sortLabel}}</span> ⌄</div>
+              <sc-if value="{{sortOpen}}" hint-placeholder-val="{{false}}">
+                <div style="position:absolute;top:28px;right:0;background:#fff;border:1px solid #ECE7F1;border-radius:11px;box-shadow:0 18px 40px -16px rgba(30,17,69,.35);z-index:60;overflow:hidden;animation:pop .14s ease both;min-width:160px">
+                  <sc-for list="{{sortOptions}}" as="o" hint-placeholder-count="4"><div onClick="{{o.onClick}}" style="{{o.style}}" style-hover="background:#F7F4FB">{{o.label}}</div></sc-for>
+                </div>
+              </sc-if>
+            </div>
             <div onClick="{{toggleRera}}" style="display:flex;align-items:center;gap:8px;cursor:pointer;font:600 13px Inter,sans-serif;color:#6B6285">Verified only<div style="width:38px;height:22px;border-radius:12px;background:{{reraToggleBg}};position:relative;transition:background .2s"><div style="position:absolute;top:2px;left:{{verifiedToggleX}};width:18px;height:18px;background:#fff;border-radius:50%;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)"></div></div></div>
           </div>
         </div>
@@ -1091,6 +1098,8 @@ class Component extends DCLogic {
     advMinProjects: 3,
     advActive: 180,
     reraOnly: false,
+    sortBy: 'score',
+    sortOpen: false,
     complianceFilter: 'All',
     quadOpen: {},
     currentLaunchId: 'LX-2026-0142',
@@ -1233,6 +1242,7 @@ class Component extends DCLogic {
       if (this.state.popoverXR && t.closest && !t.closest('[data-pop]')) this.setState({ popoverXR: null });
       if (this.state.bellOpen && t.closest && !t.closest('[data-bell]')) this.setState({ bellOpen: false });
       if (this.state.searchQuery && t.closest && !t.closest('[data-search]')) this.setState({ searchQuery: '' });
+      if (this.state.sortOpen && t.closest && !t.closest('[data-sort]')) this.setState({ sortOpen: false });
       if (this.state.geoSearch && t.closest && !t.closest('[data-geo]')) this.setState({ geoSearch: '' });
     };
     document.addEventListener('mousedown', this._docClick);
@@ -1434,7 +1444,14 @@ class Component extends DCLogic {
     const last = pts[pts.length - 1];
 
     // filtered + ranked
-    const matched = this.cpData.filter(cp => this.matchCriteria(cp)).sort((a, b) => b.score - a.score);
+    const sortMeta = { score: 'Match score', active: 'Recently active', projects: 'Most projects', name: 'Name A–Z' };
+    const sortFns = {
+      score: (a, b) => b.score - a.score,
+      active: (a, b) => a.lastActiveDays - b.lastActiveDays,
+      projects: (a, b) => b.projectsDone - a.projectsDone,
+      name: (a, b) => a.firm.localeCompare(b.firm),
+    };
+    const matched = this.cpData.filter(cp => this.matchCriteria(cp)).sort(sortFns[s.sortBy] || sortFns.score);
     const displayRows = matched.map((cp, i) => { const r = this.buildRow(cp); r.anim = 'fadeUp .34s cubic-bezier(.2,.8,.2,1) both ' + (i * 45) + 'ms'; return r; });
 
     // criteria controls
@@ -1711,6 +1728,14 @@ class Component extends DCLogic {
       act6Style: chipC(s.advActive === 180), act12Style: chipC(s.advActive === 365),
       setActive6: () => this.setState({ advActive: 180 }), setActive12: () => this.setState({ advActive: 365 }),
       toggleRera: () => this.setState({ reraOnly: !s.reraOnly }),
+      sortLabel: sortMeta[s.sortBy] || 'Match score',
+      sortOpen: s.sortOpen,
+      toggleSort: () => this.setState({ sortOpen: !s.sortOpen }),
+      sortOptions: Object.keys(sortMeta).map(k => ({
+        label: sortMeta[k], on: s.sortBy === k,
+        onClick: () => this.setState({ sortBy: k, sortOpen: false }),
+        style: 'padding:9px 14px;cursor:pointer;font:600 12.5px Inter,sans-serif;white-space:nowrap;color:' + (s.sortBy === k ? 'var(--acc)' : '#4B4568') + ';background:' + (s.sortBy === k ? '#F6F2FE' : '#fff'),
+      })),
       reraToggleBg: s.reraOnly ? 'var(--acc)' : '#E4DEF0',
       reraToggleX: s.reraOnly ? '20px' : '2px',
       verifiedToggleX: s.reraOnly ? '18px' : '2px',
