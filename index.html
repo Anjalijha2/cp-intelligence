@@ -146,7 +146,7 @@
     <div style="font:600 10px Inter,sans-serif;letter-spacing:1.5px;color:#6B5E92;padding:8px 10px;text-transform:uppercase">Workspace</div>
     <div style="{{navDash}}" onClick="{{goDashboard}}" style-active="transform:scale(.98)"><span style="width:18px;display:inline-flex">▦</span>Dashboard</div>
     <div style="{{navLaunches}}" onClick="{{goLaunches}}" style-active="transform:scale(.98)"><span style="width:18px;display:inline-flex">▤</span>Launches</div>
-    <div style="{{navRefresh}}" onClick="{{goRefresh}}" style-active="transform:scale(.98)"><span style="width:18px;display:inline-flex">⟳</span>Refresh &amp; Verify</div>
+    <div style="{{navRefresh}}" onClick="{{goRefresh}}" style-active="transform:scale(.98)"><span style="width:18px;display:inline-flex">▥</span>CP Directory</div>
     <div style="{{navMatch}}" onClick="{{goMatch}}" style-active="transform:scale(.98)"><span style="width:18px;display:inline-flex">◎</span>Launch Match</div>
     <div style="{{navQuad}}" onClick="{{goQuadrant}}" style-active="transform:scale(.98)"><span style="width:18px;display:inline-flex">◫</span>Quadrant View</div>
     <div style="{{navMicro}}" onClick="{{goMicro}}" style-active="transform:scale(.98)"><span style="width:18px;display:inline-flex">◈</span>Micro-Market</div>
@@ -584,6 +584,42 @@
           </div>
         </div>
       </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px">
+        <!-- Documentation + Market coverage -->
+        <div style="background:#fff;border:1px solid #ECE7F1;border-radius:15px;padding:24px 26px;box-shadow:var(--cardShadow)">
+          <div style="font:700 16px Montserrat,sans-serif">Documentation</div>
+          <div style="margin-top:14px">
+            <sc-for list="{{sel.documents}}" as="d" hint-placeholder-count="4">
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid #F6F3FA"><div style="font:600 13px Inter,sans-serif;color:#1E1145">{{d.name}}</div><span style="font:600 11.5px Inter,sans-serif;padding:3px 10px;border-radius:7px;background:{{d.chipBg}};color:{{d.chipColor}}">{{d.icon}} {{d.chip}}</span></div>
+            </sc-for>
+          </div>
+          <div style="font:700 11px Inter,sans-serif;letter-spacing:.5px;color:#8A7FA8;text-transform:uppercase;margin:18px 0 8px">Market coverage</div>
+          <div style="font:600 13px Inter,sans-serif;color:#1E1145">{{sel.markets}}</div>
+          <div style="font:500 12px Inter,sans-serif;color:#8A7FA8;margin-top:4px">Pin codes · {{sel.pinList}}</div>
+        </div>
+        <!-- Developers worked with + Tied launches -->
+        <div style="background:#fff;border:1px solid #ECE7F1;border-radius:15px;padding:24px 26px;box-shadow:var(--cardShadow)">
+          <div style="font:700 16px Montserrat,sans-serif">Developers worked with</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px">
+            <sc-for list="{{sel.developers}}" as="dv" hint-placeholder-count="5"><span style="font:600 12.5px Inter,sans-serif;color:#5B21B6;background:#F1EDFA;border:1px solid #E4DAF6;padding:6px 12px;border-radius:20px">{{dv}}</span></sc-for>
+          </div>
+          <div style="display:flex;align-items:center;gap:9px;margin:20px 0 8px"><span style="font:700 16px Montserrat,sans-serif">Tied launches</span><span style="font:700 10px Inter,sans-serif;background:#F1EDFA;color:var(--acc);padding:3px 9px;border-radius:20px">{{sel.tiedCount}}</span></div>
+          <sc-for list="{{sel.tiedLaunches}}" as="tl" hint-placeholder-count="2">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F6F3FA"><div style="min-width:0"><div style="font:600 13px Inter,sans-serif;color:#1E1145">{{tl.name}}</div><div style="font:500 11px Inter,sans-serif;color:#A99FBF">{{tl.id}}</div></div><span style="font:700 10px Inter,sans-serif;text-transform:uppercase;padding:3px 9px;border-radius:20px;background:{{tl.stBg}};color:{{tl.stColor}}">{{tl.status}}</span></div>
+          </sc-for>
+          <sc-if value="{{sel.noTied}}" hint-placeholder-val="{{false}}"><div style="font:500 12.5px Inter,sans-serif;color:#A99FBF;padding:8px 0">Not tied to any launch yet.</div></sc-if>
+        </div>
+      </div>
+
+      <!-- Quick actions -->
+      <div style="background:#fff;border:1px solid #ECE7F1;border-radius:15px;padding:20px 26px;margin-top:18px;box-shadow:var(--cardShadow);display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+        <span style="font:700 13px Montserrat,sans-serif;margin-right:6px">Quick actions</span>
+        <div onClick="{{profileCall}}" style="{{profileActBtn}}">📞 Call {{sel.phone}}</div>
+        <div onClick="{{profileEmail}}" style="{{profileActBtn}}">✉ Email</div>
+        <div onClick="{{profileEdit}}" style="{{profileActBtn}}">✎ Update phone</div>
+        <div onClick="{{addShortlist}}" style="padding:9px 16px;border-radius:10px;cursor:pointer;font:700 12.5px Montserrat,sans-serif;color:#fff;background:linear-gradient(135deg,var(--acc),var(--acc2))">{{shortlistBtnText}}</div>
+      </div>
     </div>
     </sc-if>
 
@@ -817,9 +853,9 @@
     <!-- ---------- REFRESH & VERIFY ---------- -->
     <sc-if value="{{onRefresh}}" hint-placeholder-val="{{false}}">
     <div style="padding:30px 34px 44px;animation:fadeUp .35s ease both">
-      <div style="font:600 12px Inter,sans-serif;letter-spacing:1.5px;color:var(--acc);text-transform:uppercase">Data Trust · Pillar 1</div>
-      <h1 style="font:800 27px Montserrat,sans-serif;margin:6px 0 4px;letter-spacing:-.4px">Refresh &amp; Verify</h1>
-      <div style="font:500 14px Inter,sans-serif;color:#6B6285">Every record re-checked, corrected and enriched — plus fresh CPs surfaced from the market.</div>
+      <div style="font:600 12px Inter,sans-serif;letter-spacing:1.5px;color:var(--acc);text-transform:uppercase">Channel Partner Directory</div>
+      <h1 style="font:800 27px Montserrat,sans-serif;margin:6px 0 4px;letter-spacing:-.4px">CP Directory</h1>
+      <div style="font:500 14px Inter,sans-serif;color:#6B6285">Browse, search and verify every channel partner — records re-checked, corrected and kept current.</div>
 
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:22px">
         <sc-for list="{{enrichStats}}" as="e" hint-placeholder-count="3">
@@ -831,32 +867,54 @@
       </div>
 
       <div style="background:#fff;border:1px solid #ECE7F1;border-radius:16px;padding:24px 26px;margin-top:18px;box-shadow:var(--cardShadow)">
-        <div style="font:700 16px Montserrat,sans-serif">Corrections this quarter</div>
-        <div style="font:500 12.5px Inter,sans-serif;color:#8A7FA8;margin-top:3px">Fields that were missing or stale — now filled and verified.</div>
-        <div style="display:grid;grid-template-columns:1.8fr .8fr 1fr 1.4fr;gap:12px;font:600 11px Inter,sans-serif;letter-spacing:.5px;color:#A99FBF;text-transform:uppercase;padding:16px 0 10px;border-bottom:1px solid #F2EEF7">
-          <div>Channel partner</div><div>Field</div><div>Before</div><div>After</div>
+        <div style="display:flex;align-items:center;gap:10px"><div style="font:700 16px Montserrat,sans-serif">Corrections this quarter</div><span style="font:700 10px Inter,sans-serif;letter-spacing:.4px;background:#F1EDFA;color:var(--acc);padding:3px 9px;border-radius:20px">{{correctionCount}} UPDATES</span></div>
+        <div style="font:500 12.5px Inter,sans-serif;color:#8A7FA8;margin-top:3px">Records updated by the system or by users — with before/after and source.</div>
+        <div style="display:grid;grid-template-columns:1.6fr .8fr .9fr 1.2fr .9fr .7fr;gap:12px;font:600 11px Inter,sans-serif;letter-spacing:.5px;color:#A99FBF;text-transform:uppercase;padding:16px 0 10px;border-bottom:1px solid #F2EEF7">
+          <div>Channel partner</div><div>Field</div><div>Before</div><div>After</div><div>Status</div><div>Source</div>
         </div>
-        <sc-for list="{{enrichRows}}" as="r" hint-placeholder-count="5">
-          <div style="display:grid;grid-template-columns:1.8fr .8fr 1fr 1.4fr;gap:12px;align-items:center;padding:13px 0;border-bottom:1px solid #F6F3FA">
+        <sc-for list="{{correctionRows}}" as="r" hint-placeholder-count="5">
+          <div style="display:grid;grid-template-columns:1.6fr .8fr .9fr 1.2fr .9fr .7fr;gap:12px;align-items:center;padding:13px 0;border-bottom:1px solid #F6F3FA">
             <div><span style="font:600 13.5px Inter,sans-serif;color:#1E1145">{{r.firm}}</span> <span style="font:500 11px Inter,sans-serif;color:#A99FBF">{{r.xr}}</span></div>
             <div style="font:600 12.5px Inter,sans-serif;color:#6B6285">{{r.field}}</div>
             <div style="font:500 12.5px Inter,sans-serif;color:#A99FBF;text-decoration:line-through">{{r.before}}</div>
             <div><span style="display:inline-flex;align-items:center;gap:5px;font:600 12px Inter,sans-serif;background:#E4F3EC;color:#1E8E5A;padding:4px 11px;border-radius:8px">✓ {{r.after}}</span></div>
+            <div style="font:600 12px Inter,sans-serif;color:#1E8E5A">{{r.status}}</div>
+            <div><span style="font:700 10px Inter,sans-serif;letter-spacing:.4px;text-transform:uppercase;padding:3px 8px;border-radius:20px;background:{{r.srcBg}};color:{{r.srcColor}}">{{r.source}}</span></div>
           </div>
         </sc-for>
       </div>
 
-      <div style="background:#fff;border:1px solid #ECE7F1;border-radius:16px;padding:24px 26px;margin-top:18px;box-shadow:var(--cardShadow)">
-        <div style="display:flex;align-items:center;gap:10px"><div style="font:700 16px Montserrat,sans-serif">New in market</div><span style="font:700 10px Inter,sans-serif;letter-spacing:.5px;background:linear-gradient(135deg,#8B5CF6,#7C3AED);color:#fff;padding:3px 9px;border-radius:20px">FRESHLY DISCOVERED</span></div>
-        <div style="font:500 12.5px Inter,sans-serif;color:#8A7FA8;margin-top:3px">CPs the system found working nearby that weren't in your database before.</div>
-        <div style="margin-top:16px">
-          <sc-for list="{{newInMarketList}}" as="n" hint-placeholder-count="3">
-            <div onClick="{{n.onOpen}}" style="display:flex;align-items:center;gap:14px;padding:13px 14px;border:1px solid #F0ECF6;border-radius:12px;margin-bottom:10px;cursor:pointer;transition:border-color .15s,transform .12s" style-hover="border-color:#D9CEF3;transform:translateX(2px)">
-              <dc-import name="ScoreRing" score="{{n.score}}" size="42" variant="{{scoreStyle}}" hint-size="42px,42px"></dc-import>
-              <div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:9px"><span style="font:700 14px Montserrat,sans-serif;color:#1E1145">{{n.firm}}</span><span style="font:700 9px Inter,sans-serif;letter-spacing:.5px;background:#EDE7F7;color:#7C3AED;padding:2px 7px;border-radius:5px">NEW</span></div><div style="font:500 12px Inter,sans-serif;color:#8A7FA8;margin-top:3px">{{n.xr}} · {{n.markets}} · {{n.configs}}</div></div>
-              <span style="font:600 13px Inter,sans-serif;color:#C3B9D6">›</span>
+      <div style="background:#fff;border:1px solid #ECE7F1;border-radius:16px;padding:22px 24px;margin-top:18px;box-shadow:var(--cardShadow)">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+          <div><div style="font:700 16px Montserrat,sans-serif">All channel partners</div><div style="font:500 12.5px Inter,sans-serif;color:#8A7FA8;margin-top:3px">{{dirTotal}} verified CPs · browse, filter and act.</div></div>
+          <div data-search style="display:flex;align-items:center;gap:9px;height:40px;padding:0 14px;border:1px solid #ECE7F1;border-radius:11px;background:#FBFAFE;min-width:280px"><span style="font-size:14px;color:#8A7FA8">⌕</span><input value="{{dirSearch}}" onInput="{{onDirSearch}}" placeholder="Search CP name or XR code…" style="flex:1;border:none;background:transparent;font:500 13px Inter,sans-serif;color:#1E1145"></div>
+        </div>
+        <div style="display:flex;gap:8px;margin:16px 0;flex-wrap:wrap">
+          <sc-for list="{{dirQuadChips}}" as="c" hint-placeholder-count="5"><div onClick="{{c.onClick}}" style="{{c.style}}">{{c.label}} <span style="opacity:.7">{{c.count}}</span></div></sc-for>
+        </div>
+        <div style="display:grid;grid-template-columns:2fr 1.5fr 1fr .8fr 1.6fr;gap:12px;font:600 11px Inter,sans-serif;letter-spacing:.5px;color:#A99FBF;text-transform:uppercase;padding:6px 0 10px;border-bottom:1px solid #F2EEF7">
+          <div>Channel partner</div><div>Micro-markets</div><div>Category</div><div>Score</div><div style="text-align:right">Quick actions</div>
+        </div>
+        <sc-for list="{{dirRows}}" as="d" hint-placeholder-count="8">
+          <div style="display:grid;grid-template-columns:2fr 1.5fr 1fr .8fr 1.6fr;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid #F6F3FA">
+            <div onClick="{{d.onView}}" style="cursor:pointer;min-width:0"><div style="font:600 13.5px Inter,sans-serif;color:#1E1145;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{d.firm}}</div><div style="font:500 11px Inter,sans-serif;color:#A99FBF">{{d.xr}} · {{d.configs}}</div></div>
+            <div style="font:500 12px Inter,sans-serif;color:#6B6285;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{d.markets}}</div>
+            <div><span style="font:700 10px Inter,sans-serif;letter-spacing:.4px;text-transform:uppercase;padding:3px 9px;border-radius:20px;background:{{d.catBg}};color:{{d.catColor}}">{{d.catLabel}}</span></div>
+            <div style="font:800 14px Montserrat,sans-serif;color:#1E1145">{{d.score}}</div>
+            <div style="display:flex;gap:7px;justify-content:flex-end">
+              <div onClick="{{d.onCall}}" style="{{dirActBtn}}" title="Call">📞</div>
+              <div onClick="{{d.onEmail}}" style="{{dirActBtn}}" title="Email">✉</div>
+              <div onClick="{{d.onView}}" style="padding:6px 12px;border-radius:8px;cursor:pointer;font:600 11.5px Inter,sans-serif;color:var(--acc);border:1px solid #D9CEF3;background:#F6F2FE;white-space:nowrap">View profile</div>
             </div>
-          </sc-for>
+          </div>
+        </sc-for>
+        <sc-if value="{{dirEmpty}}" hint-placeholder-val="{{false}}"><div style="padding:30px;text-align:center;font:500 13px Inter,sans-serif;color:#A99FBF">No CPs match your search.</div></sc-if>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px">
+          <div style="font:500 12px Inter,sans-serif;color:#8A7FA8">{{dirRangeLabel}}</div>
+          <div style="display:flex;gap:8px">
+            <div onClick="{{dirPrev}}" style="{{dirPrevStyle}}">‹ Prev</div>
+            <div onClick="{{dirNext}}" style="{{dirNextStyle}}">Next ›</div>
+          </div>
         </div>
       </div>
     </div>
@@ -1014,6 +1072,16 @@ class Component extends DCLogic {
     reraOnly: false,
     sortBy: 'score',
     sortOpen: false,
+    dirSearch: '',
+    dirQuad: 'All',
+    dirPage: 0,
+    corrections: [
+      { firm:'Zubair Realty', xr:'XR33921', field:'Email', before:'—', after:'verified', status:'Verified', source:'System' },
+      { firm:'Anita Fulara Estates', xr:'XR022153', field:'GST', before:'—', after:'on file', status:'Verified', source:'System' },
+      { firm:'Synergy Enterprise', xr:'XR005158', field:'RERA', before:'expired', after:'renewed to Nov 2026', status:'Verified', source:'System' },
+      { firm:'Prasad Properties', xr:'XR33907', field:'Address', before:'—', after:'updated', status:'Verified', source:'System' },
+      { firm:'Home Circle Realty', xr:'XR000009', field:'Phone', before:'—', after:'verified', status:'Verified', source:'System' },
+    ],
     complianceFilter: 'All',
     quadOpen: {},
     currentLaunchId: 'LX-2026-0142',
@@ -1347,11 +1415,23 @@ class Component extends DCLogic {
     const completeness = cp.gst && reraOk ? 100 : (cp.gst || reraOk ? 92 : 84);
     const vdnb = this.vdnbMap[cp.xr] || 22;
     const vc = vdnb <= 20 ? { c:'#1E8E5A', bg:'#E4F3EC', lbl:'Low — strong conversion' } : (vdnb <= 26 ? { c:'#D97706', bg:'#FEF0E1', lbl:'Moderate' } : { c:'#DC2626', bg:'#FDECEC', lbl:'High — leak / wastage risk' });
+    const docs = [
+      { name: 'RERA certificate', ok: reraOk }, { name: 'PAN card', ok: true },
+      { name: 'GST certificate', ok: !!cp.gst }, { name: 'Sales agreement', ok: true },
+    ];
+    const devPool = ['Lodha', 'Rustomjee', 'Kalpataru', 'Godrej', 'Oberoi Realty', 'Raheja', 'Ajmera', 'Kanakia', 'Prestige', 'Brigade'];
+    const developers = devPool.slice(0, Math.max(2, Math.min(cp.devCount || 3, devPool.length)));
+    const cpCity = (cp.markets || '').split('·')[0].trim();
+    const tied = this.launches.filter(l => l.city && (cpCity.startsWith(l.city.split(' ')[0]) || (cp.markets || '').includes(l.city.split(' ')[0])));
     return {
       ...cp, quadLabel: q.label, breakdown: this.makeBreakdown(cp), completeness,
       vdnb, vdnbColor: vc.c, vdnbBg: vc.bg, vdnbLabel: vc.lbl, newInMarket: this.newSet.includes(cp.xr),
       reraChipText: reraOk ? 'Valid' : 'Expiring 30d', reraChipBg: reraOk ? '#E4F3EC' : '#FEF0E1', reraChipColor: reraOk ? '#1E8E5A' : '#D97706',
       gstChipText: cp.gst ? 'Active' : 'Not on file', gstChipBg: cp.gst ? '#E4F3EC' : '#FEF0E1', gstChipColor: cp.gst ? '#1E8E5A' : '#D97706',
+      documents: docs.map(d => ({ name: d.name, chip: d.ok ? 'On file' : 'Missing', chipBg: d.ok ? '#E4F3EC' : '#FDECEC', chipColor: d.ok ? '#1E8E5A' : '#DC2626', icon: d.ok ? '✓' : '!' })),
+      developers, pinList: (cp.pinCodes || []).join(', '),
+      tiedLaunches: tied.map(l => ({ name: l.name, id: l.id, status: this.launchStatusMeta[l.status].label, stColor: this.launchStatusMeta[l.status].color, stBg: this.launchStatusMeta[l.status].bg })),
+      tiedCount: tied.length, noTied: tied.length === 0,
     };
   }
 
@@ -1404,6 +1484,34 @@ class Component extends DCLogic {
     const curMeta = lm[curLaunch.status];
     const _a = curLaunch.address;
     const mapAddr = _a ? [_a.building, _a.street, _a.locality, _a.city, _a.state, _a.pin].filter(Boolean).join(', ') : (curLaunch.city ? curLaunch.city + ', India' : '');
+
+    // --- CP Directory (CR-06) ---
+    const qm = this.quadMeta;
+    const dq = s.dirSearch.trim().toLowerCase();
+    const dirFiltered = this.cpData.filter(c => (s.dirQuad === 'All' || c.quad === s.dirQuad) && (!dq || c.firm.toLowerCase().includes(dq) || c.xr.toLowerCase().includes(dq)));
+    const dirTotal = this.cpData.length;
+    const DIR_PS = 8;
+    const dirPages = Math.max(1, Math.ceil(dirFiltered.length / DIR_PS));
+    const dirPage = Math.min(s.dirPage, dirPages - 1);
+    const dirSlice = dirFiltered.slice(dirPage * DIR_PS, dirPage * DIR_PS + DIR_PS);
+    const dirActBtn = 'width:32px;height:32px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;border:1px solid #ECE7F1;background:#fff;color:#6B6285';
+    const dirRows = dirSlice.map(c => { const m = qm[c.quad]; return {
+      firm: c.firm, xr: c.xr, configs: c.configs, markets: c.markets, score: c.score,
+      catLabel: m.label, catColor: m.color, catBg: m.bg,
+      onView: () => this.openProfile(c.xr),
+      onCall: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.showToast('Calling ' + c.firm + ' · ' + c.phone); },
+      onEmail: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.showToast('Email drafted to ' + c.email); },
+    }; });
+    const dirQuadChips = [['All', dirTotal], ['pf', this.cpData.filter(c => c.quad === 'pf').length], ['tv', this.cpData.filter(c => c.quad === 'tv').length], ['pl', this.cpData.filter(c => c.quad === 'pl').length], ['lo', this.cpData.filter(c => c.quad === 'lo').length]].map(([k, count]) => { const on = s.dirQuad === k; return {
+      label: k === 'All' ? 'All' : qm[k].label, count,
+      onClick: () => this.setState({ dirQuad: k, dirPage: 0 }),
+      style: 'display:inline-flex;align-items:center;gap:7px;padding:8px 13px;border-radius:9px;cursor:pointer;font:600 12px Inter,sans-serif;border:1px solid ' + (on ? 'var(--acc)' : '#ECE7F1') + ';background:' + (on ? 'var(--acc)' : '#fff') + ';color:' + (on ? '#fff' : '#6B6285'),
+    }; });
+    const dirStart = dirFiltered.length ? dirPage * DIR_PS + 1 : 0;
+    const dirEnd = Math.min(dirPage * DIR_PS + DIR_PS, dirFiltered.length);
+    const dirPageBtn = (en) => 'padding:8px 14px;border-radius:9px;font:600 12.5px Inter,sans-serif;border:1px solid #ECE7F1;background:#fff;color:' + (en ? '#5B4E80' : '#C9C2DA') + ';cursor:' + (en ? 'pointer' : 'default');
+    // --- Corrections (CR-08) ---
+    const correctionRows = s.corrections.map(r => ({ ...r, srcBg: r.source === 'User' ? '#F6EFDC' : '#EDE7F7', srcColor: r.source === 'User' ? '#B8963E' : '#7C3AED' }));
 
     const W = 300, H = 96, mn = 18, mx = 82;
     const pts = this.trend.map((v, i) => [(i / (this.trend.length - 1)) * W, H - ((v - mn) / (mx - mn)) * H]);
@@ -1661,8 +1769,15 @@ class Component extends DCLogic {
       creatingLaunch: s.creatingLaunch,
       curLaunchName: curLaunch.name, curLaunchMeta: curLaunch.config + ' · ' + curLaunch.price + ' · ' + curLaunch.dev, mapAddr,
       curLaunchStLabel: curMeta.label, curLaunchStColor: curMeta.color, curLaunchStBg: curMeta.bg,
-      enrichStats: this.enrichStats, enrichRows: this.enrichRows,
-      newInMarketList: this.cpData.filter(c => this.newSet.includes(c.xr)).map(c => ({ firm:c.firm, xr:c.xr, score:c.score, markets:c.markets, configs:c.configs, onOpen: () => this.openProfile(c.xr) })),
+      enrichStats: this.enrichStats,
+      correctionRows, correctionCount: s.corrections.length,
+      dirRows, dirTotal, dirQuadChips, dirActBtn,
+      dirSearch: s.dirSearch, onDirSearch: (e) => this.setState({ dirSearch: e.target.value, dirPage: 0 }),
+      dirEmpty: dirFiltered.length === 0,
+      dirRangeLabel: 'Showing ' + dirStart + '–' + dirEnd + ' of ' + dirFiltered.length,
+      dirPrev: () => { if (dirPage > 0) this.setState({ dirPage: dirPage - 1 }); },
+      dirNext: () => { if (dirPage < dirPages - 1) this.setState({ dirPage: dirPage + 1 }); },
+      dirPrevStyle: dirPageBtn(dirPage > 0), dirNextStyle: dirPageBtn(dirPage < dirPages - 1),
       complianceFilter: s.complianceFilter,
       complianceChips: ['All', 'RERA', 'GST', 'PAN'].map(cat => ({ label: cat, count: cat === 'All' ? this.complianceAlerts.length : this.complianceAlerts.filter(a => a.cat === cat).length, on: s.complianceFilter === cat, style: 'display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:9px;cursor:pointer;font:600 12.5px Inter,sans-serif;transition:transform .1s;border:1px solid ' + (s.complianceFilter === cat ? 'var(--acc)' : '#ECE7F1') + ';background:' + (s.complianceFilter === cat ? 'var(--acc)' : '#fff') + ';color:' + (s.complianceFilter === cat ? '#fff' : '#6B6285'), onClick: () => this.setState({ complianceFilter: cat }) })),
 
@@ -1724,6 +1839,10 @@ class Component extends DCLogic {
       shortlistBtnBg: inShortlist ? '#1E8E5A' : 'linear-gradient(135deg,var(--acc),var(--acc2))',
       addShortlist: () => this.toggleShort(sel.xr, sel.firm),
       assignMgr: () => this.showToast('Assigned to Sourcing Manager — Rohit K.'),
+      profileActBtn: 'padding:9px 16px;border-radius:10px;cursor:pointer;font:600 12.5px Inter,sans-serif;color:#4B4568;border:1px solid #ECE7F1;background:#fff;white-space:nowrap',
+      profileCall: () => this.showToast('Calling ' + sel.firm + ' · ' + sel.phone),
+      profileEmail: () => this.showToast('Email drafted to ' + sel.email),
+      profileEdit: () => this.applyCorrection(sel.xr, 'Phone', sel.phone, sel.phone + ' (re-verified)'),
 
       scatterDots, leaveDot: () => this.setState({ hoverDot: null }),
       pfList, pfCount, quadCells, pfHasMore, pfToggleLabel, pfToggleIcon,
@@ -1840,6 +1959,7 @@ class Component extends DCLogic {
   setLaunchStatus(id, st) { this.launches = this.launches.map(l => l.id === id ? { ...l, status: st } : l); const patch = st === 'active' ? { currentLaunchId: id } : {}; this.setState(patch); this.forceUpdate(); this.showToast('Launch marked ' + this.launchStatusMeta[st].label.toLowerCase()); }
   setLaunchFilter(f) { this.setState({ launchFilter: f }); }
   openLaunch(id) { const l = this.launches.find(x => x.id === id); this.setState({ currentLaunchId: id }); if (l) this.showToast('Viewing launch · ' + l.name); }
+  applyCorrection(xr, field, before, after) { const cp = this.cpData.find(c => c.xr === xr); this.setState({ corrections: [{ firm: cp ? cp.firm : xr, xr, field, before, after, status: 'Verified', source: 'User' }, ...this.state.corrections] }); this.showToast('Record updated · ' + field); }
   newLaunch() { this.setState({ launchDrawer: true, lf: { name: '', dev: '', street: '', locality: '', pin: '', state: '', district: '', city: '', configs: [], priceMin: 1, priceMax: 3, tier: 'Branded', status: 'active', units: '', notes: '' } }); }
   closeLaunchDrawer() { this.setState({ launchDrawer: false }); }
   setLf(k, v) { this.setState({ lf: { ...this.state.lf, [k]: v } }); }
