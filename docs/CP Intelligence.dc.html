@@ -1602,7 +1602,7 @@ class Component extends DCLogic {
     const netNodes = _netN.map(n => ({ x: n.x + 'px', y: n.y + 'px', col: n.col, score: n.score, hasScore: n.hasScore, delay: n.delay }));
     const netLinks = _netN.map(n => ({ x: n.x, y: n.y, col: n.col, delay: n.delay }));
     const navBase = 'display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:10px;cursor:pointer;font:600 14px Inter,sans-serif;margin-bottom:5px;transition:transform .12s,background .15s,color .15s;';
-    const activeKey = screen === 'profile' ? 'match' : (screen === 'compliance' ? 'dashboard' : screen);
+    const activeKey = (screen === 'match' && s.matchTab === 'quad') ? 'quadrant' : (screen === 'profile' ? 'match' : (screen === 'compliance' ? 'dashboard' : screen));
     const nav = (key) => navBase + (activeKey === key ? 'color:#fff;background:linear-gradient(135deg,var(--acc),var(--acc2));box-shadow:0 8px 20px -10px rgba(139,92,246,.7)' : 'color:#B9B0CF;background:transparent');
     // --- Launches ---
     const lm = this.launchStatusMeta;
@@ -1920,7 +1920,7 @@ class Component extends DCLogic {
       goDashboard: () => this.setState({ screen: 'dashboard' }),
       goLaunches: () => this.setState({ screen: 'launches' }),
       goMatch: () => this.setState({ screen: 'match' }),
-      goQuadrant: () => this.setState({ screen: 'quadrant' }),
+      goQuadrant: () => this.setState({ screen: 'match', matchTab: 'quad' }),
       goMicro: () => this.setState({ screen: 'micro' }),
       goRefresh: () => this.setState({ screen: 'refresh' }),
       goCompliance: () => this.setState({ screen: 'compliance' }),
