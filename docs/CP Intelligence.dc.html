@@ -1125,7 +1125,7 @@
 <!-- BULK SHORTLIST POPUP (CR-12) -->
 <sc-if value="{{bulkOpen}}" hint-placeholder-val="{{false}}">
   <div onClick="{{closeBulk}}" style="position:fixed;inset:0;background:rgba(30,17,69,.42);z-index:100;animation:fadeIn .2s ease both"></div>
-  <div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(680px,92vw);max-height:82vh;background:#fff;border-radius:18px;z-index:101;box-shadow:0 40px 90px -30px rgba(30,17,69,.6);display:flex;flex-direction:column;overflow:hidden;animation:pop .18s ease both">
+  <div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(680px,92vw);max-height:82vh;background:#fff;border-radius:18px;z-index:101;box-shadow:0 40px 90px -30px rgba(30,17,69,.6);display:flex;flex-direction:column;overflow:hidden;animation:fadeIn .18s ease both">
     <div style="padding:20px 24px;border-bottom:1px solid #ECE7F1;display:flex;align-items:center;justify-content:space-between">
       <div><div style="font:800 17px Montserrat,sans-serif">{{bulkLabel}} — all partners</div><div style="font:500 12px Inter,sans-serif;color:#8A7FA8;margin-top:2px">Select partners to add to the launch shortlist.</div></div>
       <div onClick="{{closeBulk}}" style="cursor:pointer;font-size:18px;color:#8A7FA8">✕</div>
@@ -1133,7 +1133,7 @@
     <div style="display:grid;grid-template-columns:28px 2fr .8fr 1.4fr 1fr;gap:12px;padding:10px 24px;font:600 10px Inter,sans-serif;letter-spacing:.5px;color:#A99FBF;text-transform:uppercase;border-bottom:1px solid #F2EEF7">
       <div></div><div>Channel partner</div><div>Score</div><div>Category</div><div>Status</div>
     </div>
-    <div style="flex:1;overflow:auto">
+    <div style="flex:1;min-height:0;overflow:auto">
       <sc-for list="{{bulkRows}}" as="b" hint-placeholder-count="6">
         <div onClick="{{b.onToggle}}" style="{{b.rowStyle}}">
           <div style="{{b.boxStyle}}"><sc-if value="{{b.checked}}" hint-placeholder-val="{{true}}">✓</sc-if></div>
