@@ -148,7 +148,6 @@
     <div style="{{navLaunches}}" onClick="{{goLaunches}}" style-active="transform:scale(.98)"><span style="width:18px;display:inline-flex">▤</span>Launches</div>
     <div style="{{navRefresh}}" onClick="{{goRefresh}}" style-active="transform:scale(.98)"><span style="width:18px;display:inline-flex">▥</span>CP Directory</div>
     <div style="{{navMatch}}" onClick="{{goMatch}}" style-active="transform:scale(.98)"><span style="width:18px;display:inline-flex">◎</span>Launch Match</div>
-    <div style="{{navQuad}}" onClick="{{goQuadrant}}" style-active="transform:scale(.98)"><span style="width:18px;display:inline-flex">◫</span>Quadrant View</div>
     <div style="{{navMicro}}" onClick="{{goMicro}}" style-active="transform:scale(.98)"><span style="width:18px;display:inline-flex">◈</span>Micro-Market</div>
     <div onClick="{{goLaunches}}" style="margin-top:auto;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:13px;padding:14px 15px;cursor:pointer;transition:background .15s" style-hover="background:rgba(255,255,255,.09)">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px"><span style="font:600 11px Inter,sans-serif;color:#B8963E;letter-spacing:.5px">CURRENT LAUNCH</span><span style="font:700 9px Inter,sans-serif;letter-spacing:.4px;text-transform:uppercase;color:{{curLaunchStColor}};background:{{curLaunchStBg}};padding:2px 7px;border-radius:20px">{{curLaunchStLabel}}</span></div>
@@ -366,7 +365,12 @@
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:7px"><span style="font:600 10.5px Inter,sans-serif;color:#8A7FA8;width:30px">Min</span><input type="range" min="1" max="6" step="0.5" value="{{priceMin}}" onInput="{{setPriceMin}}" style="flex:1;accent-color:var(--acc)"></div>
         <div style="display:flex;align-items:center;gap:10px"><span style="font:600 10.5px Inter,sans-serif;color:#8A7FA8;width:30px">Max</span><input type="range" min="1" max="6" step="0.5" value="{{priceMax}}" onInput="{{setPriceMax}}" style="flex:1;accent-color:var(--acc)"></div>
 
-        <div onClick="{{toggleAdvanced}}" style="display:flex;align-items:center;justify-content:space-between;margin-top:26px;padding:13px 0;border-top:1px solid #ECE7F1;cursor:pointer;font:700 13px Montserrat,sans-serif"><span>Advanced filters</span><span style="color:var(--acc);transition:transform .2s;transform:{{advChevron}}">⌄</span></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:22px;padding-top:16px;border-top:1px solid #ECE7F1">
+          <div><div style="font:600 13px Inter,sans-serif;color:#1E1145">Verified only</div><div style="font:500 11px Inter,sans-serif;color:#A99FBF;margin-top:2px">RERA-valid CPs only</div></div>
+          <div onClick="{{toggleRera}}" style="width:42px;height:24px;border-radius:14px;background:{{reraToggleBg}};position:relative;cursor:pointer;transition:background .2s"><div style="position:absolute;top:2px;left:{{reraToggleX}};width:20px;height:20px;background:#fff;border-radius:50%;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)"></div></div>
+        </div>
+
+        <div onClick="{{toggleAdvanced}}" style="display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding:13px 0;border-top:1px solid #ECE7F1;cursor:pointer;font:700 13px Montserrat,sans-serif"><span>Advanced filters</span><span style="color:var(--acc);transition:transform .2s;transform:{{advChevron}}">⌄</span></div>
         <sc-if value="{{advanced}}" hint-placeholder-val="{{false}}">
           <div style="animation:fadeUp .25s ease both;padding-bottom:4px">
             <div style="font:600 11px Inter,sans-serif;letter-spacing:.8px;color:#8A7FA8;text-transform:uppercase;margin:6px 0 9px">Developer type worked with</div>
@@ -385,10 +389,6 @@
               <div onClick="{{setActive6}}" style="{{act6Style}}">Last 6 months</div>
               <div onClick="{{setActive12}}" style="{{act12Style}}">Last 12 months</div>
             </div>
-            <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0 14px">
-              <span style="font:600 13px Inter,sans-serif">RERA valid only</span>
-              <div onClick="{{toggleRera}}" style="width:42px;height:24px;border-radius:14px;background:{{reraToggleBg}};position:relative;cursor:pointer;transition:background .2s"><div style="position:absolute;top:2px;left:{{reraToggleX}};width:20px;height:20px;background:#fff;border-radius:50%;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)"></div></div>
-            </div>
             <div style="border-top:1px solid #ECE7F1;padding-top:14px">
               <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><span style="font:600 11px Inter,sans-serif;letter-spacing:.8px;color:#8A7FA8;text-transform:uppercase">Score parameters</span><span style="font:600 10.5px Inter,sans-serif;color:#A99FBF">total {{scoreWeightTotal}}</span></div>
               <sc-for list="{{scoreParamSliders}}" as="p" hint-placeholder-count="6">
@@ -406,21 +406,12 @@
 
       <!-- results panel -->
       <div style="flex:1;overflow:auto;padding:26px 30px 40px;min-width:0">
-        <div style="display:flex;align-items:flex-end;justify-content:space-between">
-          <div>
-            <h1 style="font:800 22px Montserrat,sans-serif;margin:0">Matching Channel Partners</h1>
-            <div style="font:600 13px Inter,sans-serif;color:var(--acc);margin-top:4px">Ranked shortlist on day one — not day 20.</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:14px">
-            <div data-sort="1" style="position:relative">
-              <div onClick="{{toggleSort}}" style="display:flex;align-items:center;gap:8px;font:600 13px Inter,sans-serif;color:#6B6285;cursor:pointer">Sort by: <span style="color:#1E1145">{{sortLabel}}</span> ⌄</div>
-              <sc-if value="{{sortOpen}}" hint-placeholder-val="{{false}}">
-                <div style="position:absolute;top:28px;right:0;background:#fff;border:1px solid #ECE7F1;border-radius:11px;box-shadow:0 18px 40px -16px rgba(30,17,69,.35);z-index:60;overflow:hidden;animation:pop .14s ease both;min-width:160px">
-                  <sc-for list="{{sortOptions}}" as="o" hint-placeholder-count="4"><div onClick="{{o.onClick}}" style="{{o.style}}" style-hover="background:#F7F4FB">{{o.label}}</div></sc-for>
-                </div>
-              </sc-if>
-            </div>
-            <div onClick="{{toggleRera}}" style="display:flex;align-items:center;gap:8px;cursor:pointer;font:600 13px Inter,sans-serif;color:#6B6285">Verified only<div style="width:38px;height:22px;border-radius:12px;background:{{reraToggleBg}};position:relative;transition:background .2s"><div style="position:absolute;top:2px;left:{{verifiedToggleX}};width:18px;height:18px;background:#fff;border-radius:50%;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)"></div></div></div>
+        <div>
+          <h1 style="font:800 22px Montserrat,sans-serif;margin:0">Launch Match</h1>
+          <div style="font:600 13px Inter,sans-serif;color:var(--acc);margin-top:4px">Ranked shortlist on day one — not day 20.</div>
+          <div style="display:inline-flex;gap:6px;margin-top:14px;background:#F5F2F9;padding:5px;border-radius:12px">
+            <div onClick="{{showList}}" style="{{tabListStyle}}">Matching Channel Partners</div>
+            <div onClick="{{showQuad}}" style="{{tabQuadStyle}}">Quadrant View</div>
           </div>
         </div>
 
@@ -434,13 +425,7 @@
 
         <sc-if value="{{showResults}}" hint-placeholder-val="{{true}}">
         <div>
-          <div style="display:flex;align-items:center;justify-content:space-between;margin:18px 0 12px;flex-wrap:wrap;gap:12px">
-            <div style="display:flex;align-items:center;gap:10px;font:600 13px Inter,sans-serif;color:#6B6285"><span style="background:#F1EDFA;color:#5B21B6;padding:4px 11px;border-radius:8px;font-weight:700">{{resultCount}} matches</span> scored against {{summaryLine}}</div>
-            <div style="display:flex;gap:8px">
-              <div onClick="{{showList}}" style="{{tabListStyle}}">Matching Channel Partners</div>
-              <div onClick="{{showQuad}}" style="{{tabQuadStyle}}">Quadrant View</div>
-            </div>
-          </div>
+          <div style="display:flex;align-items:center;gap:10px;margin:18px 0 12px;font:600 13px Inter,sans-serif;color:#6B6285"><span style="background:#F1EDFA;color:#5B21B6;padding:4px 11px;border-radius:8px;font-weight:700">{{resultCount}} matches</span> scored against {{summaryLine}}</div>
 
           <sc-if value="{{mtList}}" hint-placeholder-val="{{true}}">
           <div>
@@ -1708,7 +1693,7 @@ class Component extends DCLogic {
     const scoreWeightTotal = s.scoreWeights.reduce((a, b) => a + b, 0);
     // CR-10: tabs
     const mtList = s.matchTab !== 'quad';
-    const tabStyle = (on) => 'padding:9px 16px;border-radius:10px;cursor:pointer;font:700 12.5px Montserrat,sans-serif;transition:all .15s;' + (on ? 'background:#241350;color:#fff' : 'background:#F5F2F9;color:#6B6285');
+    const tabStyle = (on) => 'padding:9px 18px;border-radius:9px;cursor:pointer;font:700 12.5px Montserrat,sans-serif;transition:background .2s,color .2s,box-shadow .2s;' + (on ? 'background:var(--acc);color:#fff;box-shadow:0 6px 16px -8px rgba(139,92,246,.8)' : 'background:transparent;color:#5B21B6');
 
     // criteria controls
     const chip = (on) => 'padding:8px 14px;border-radius:9px;cursor:pointer;font:600 13px Inter,sans-serif;transition:transform .1s;border:1px solid ' + (on ? 'var(--acc)' : '#ECE7F1') + ';background:' + (on ? 'var(--acc)' : '#fff') + ';color:' + (on ? '#fff' : '#8A7FA8');
