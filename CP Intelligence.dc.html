@@ -1428,15 +1428,32 @@ class Component extends DCLogic {
       const a = cur.address;
       const q = a ? [a.street, a.locality, a.city, a.state, a.pin, 'India'].filter(Boolean).join(', ') : ((cur.city || 'Borivali West') + ', Mumbai, India');
       const cols = { premium: '#2A6FDB', mid: '#1E8E5A', affordable: '#D97706', luxury: '#B8963E', completed: '#6B6285' };
+      // building/tower glyph tinted by category color — w×h px, bottom-center anchored
+      const tower = (color, w, h) => {
+        const bw = w * 0.62, bx = (w - bw) / 2, roof = h * 0.16;
+        const win = (cx, cy) => '<rect x="' + cx.toFixed(1) + '" y="' + cy.toFixed(1) + '" width="2.4" height="2.4" rx="0.5" fill="#fff" opacity="0.9"/>';
+        let wins = '';
+        const cols2 = [bx + bw * 0.28, bx + bw * 0.58];
+        for (let r = 0; r < Math.max(2, Math.round((h - roof) / (h * 0.16))); r++) {
+          const cy = roof + h * 0.14 + r * (h * 0.15);
+          if (cy > h - h * 0.13) break;
+          cols2.forEach(cx => { wins += win(cx - 1.2, cy); });
+        }
+        return '<div style="filter:drop-shadow(0 3px 4px rgba(0,0,0,.4))">'
+          + '<svg width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + ' ' + h + '" xmlns="http://www.w3.org/2000/svg">'
+          + '<rect x="' + bx.toFixed(1) + '" y="' + roof.toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + (h - roof).toFixed(1) + '" rx="2" fill="' + color + '" stroke="#fff" stroke-width="1.6"/>'
+          + '<rect x="' + (bx + bw * 0.32).toFixed(1) + '" y="' + (roof * 0.35).toFixed(1) + '" width="' + (bw * 0.36).toFixed(1) + '" height="' + (roof * 0.9).toFixed(1) + '" rx="1" fill="' + color + '" stroke="#fff" stroke-width="1.4"/>'
+          + wins + '</svg></div>';
+      };
       const place = (c) => {
         this._map.setView([c.lat, c.lng], 14);
-        const li = L.divIcon({ className: '', html: '<div style="width:22px;height:22px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:#8B5CF6;border:3px solid #fff;box-shadow:0 3px 9px rgba(0,0,0,.45)"></div>', iconSize: [22, 22], iconAnchor: [11, 22] });
+        const li = L.divIcon({ className: '', html: tower('#8B5CF6', 30, 36), iconSize: [30, 36], iconAnchor: [15, 36] });
         L.marker([c.lat, c.lng], { icon: li }).addTo(this._layer).bindPopup('<b>' + cur.name + '</b><br>Your launch');
         this.micro.forEach((m, i) => {
           const ang = (i / this.micro.length) * 2 * Math.PI;
           const d = (m.dist || 1) * 0.009;
           const col = cols[m.cat] || '#8B5CF6';
-          const ic = L.divIcon({ className: '', html: '<div style="width:14px;height:14px;border-radius:50%;background:' + col + ';border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.4)"></div>', iconSize: [14, 14], iconAnchor: [7, 7] });
+          const ic = L.divIcon({ className: '', html: tower(col, 24, 28), iconSize: [24, 28], iconAnchor: [12, 28] });
           const mk = L.marker([c.lat + Math.sin(ang) * d, c.lng + Math.cos(ang) * d], { icon: ic }).addTo(this._layer).bindPopup('<b>' + m.name + '</b><br>' + m.dev + '<br>₹' + m.rate.toLocaleString('en-IN') + '/sq.ft · ' + m.dist + ' km');
           mk.on('click', () => this.setState({ microSel: m.name }));
           this._compMarkers[m.name] = mk;
