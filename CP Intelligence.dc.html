@@ -18,6 +18,11 @@
   ::-webkit-scrollbar{width:10px;height:10px}
   ::-webkit-scrollbar-thumb{background:#D6CFE2;border-radius:8px;border:2px solid transparent;background-clip:padding-box}
   ::-webkit-scrollbar-thumb:hover{background:#C3B9D6;background-clip:padding-box}
+  .cpi-launch-tip{background:rgba(30,17,69,.94);color:#fff;border:none;border-radius:12px;padding:11px 15px;max-width:260px;white-space:normal;box-shadow:0 12px 30px -14px rgba(0,0,0,.55)}
+  .cpi-launch-tip .cpi-tip-t{font:700 12.5px Montserrat,sans-serif}
+  .cpi-launch-tip .cpi-tip-s{font:500 11px Inter,sans-serif;color:rgba(255,255,255,.72);margin-top:3px}
+  .cpi-launch-tip.leaflet-tooltip-right::before{border-right-color:rgba(30,17,69,.94)}
+  .cpi-launch-tip.leaflet-tooltip-left::before{border-left-color:rgba(30,17,69,.94)}
   @keyframes spin{to{transform:rotate(360deg)}}
   @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
   @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -850,12 +855,6 @@
         <div style="display:grid;grid-template-columns:1fr 340px;gap:16px;margin-top:16px">
         <div style="position:relative;height:520px;border-radius:16px;overflow:hidden;border:1px solid #ECE7F1;box-shadow:var(--cardShadow)">
           <div id="cpi-map" style="position:absolute;inset:0;z-index:0;background:#E7ECEF"></div>
-          <sc-if value="{{mapAddr}}" hint-placeholder-val="{{false}}">
-            <div style="position:absolute;left:16px;top:16px;z-index:500;background:rgba(30,17,69,.92);color:#fff;border-radius:12px;padding:11px 15px;max-width:340px;box-shadow:0 12px 30px -14px rgba(0,0,0,.5)">
-              <div style="font:700 12.5px Montserrat,sans-serif">{{curLaunchName}}</div>
-              <div style="font:500 11px Inter,sans-serif;color:rgba(255,255,255,.72);margin-top:3px">{{mapAddr}}</div>
-            </div>
-          </sc-if>
           <div style="position:absolute;left:16px;bottom:16px;z-index:500;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border:1px solid rgba(236,231,241,.9);border-radius:14px;padding:13px 15px;box-shadow:0 12px 30px -14px rgba(30,17,69,.3)">
             <div style="font:700 10px Inter,sans-serif;letter-spacing:.6px;color:#8A7FA8;text-transform:uppercase;margin-bottom:9px">Project category</div>
             <sc-for list="{{catLegend}}" as="c" hint-placeholder-count="5">
@@ -1445,10 +1444,28 @@ class Component extends DCLogic {
           + '<rect x="' + (bx + bw * 0.32).toFixed(1) + '" y="' + (roof * 0.35).toFixed(1) + '" width="' + (bw * 0.36).toFixed(1) + '" height="' + (roof * 0.9).toFixed(1) + '" rx="1" fill="' + color + '" stroke="#fff" stroke-width="1.4"/>'
           + wins + '</svg></div>';
       };
+      const addr = a ? [a.building, a.street, a.locality, a.city, a.state, a.pin].filter(Boolean).join(', ') : ((cur.city || 'Borivali West') + ', India');
       const place = (c) => {
         this._map.setView([c.lat, c.lng], 14);
         const li = L.divIcon({ className: '', html: tower('#8B5CF6', 30, 36), iconSize: [30, 36], iconAnchor: [15, 36] });
-        L.marker([c.lat, c.lng], { icon: li }).addTo(this._layer).bindPopup('<b>' + cur.name + '</b><br>Your launch');
+        this._launchMarker = L.marker([c.lat, c.lng], { icon: li }).addTo(this._layer)
+          .bindPopup('<b>' + cur.name + '</b><br>Your launch')
+          .bindTooltip('<div class="cpi-tip-t">' + cur.name + '</div><div class="cpi-tip-s">' + addr + '</div>', { permanent: true, direction: 'right', offset: [14, 0], className: 'cpi-launch-tip', opacity: 1 });
+        // keep the label on the marker's RIGHT; flip LEFT only when it would clip the right edge
+        const tipHtml = '<div class="cpi-tip-t">' + cur.name + '</div><div class="cpi-tip-s">' + addr + '</div>';
+        const flipTip = () => {
+          const m = this._launchMarker; if (!m || !this._map) return;
+          const pt = this._map.latLngToContainerPoint(m.getLatLng());
+          const w = this._map.getSize().x;
+          const dir = pt.x > (w - 280) ? 'left' : 'right';
+          this._tipDir = dir;
+          if (this._tipShownDir === dir) return;
+          this._tipShownDir = dir;
+          m.unbindTooltip().bindTooltip(tipHtml, { permanent: true, direction: dir, offset: dir === 'left' ? [-14, 0] : [14, 0], className: 'cpi-launch-tip', opacity: 1 }).openTooltip();
+        };
+        this._flipTip = flipTip; this._tipShownDir = 'right';
+        if (!this._flipBound) { this._flipBound = true; this._map.on('moveend zoomend', () => this._flipTip && this._flipTip()); }
+        setTimeout(flipTip, 120);
         this.micro.forEach((m, i) => {
           const ang = (i / this.micro.length) * 2 * Math.PI;
           const d = (m.dist || 1) * 0.009;
