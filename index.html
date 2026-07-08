@@ -366,7 +366,7 @@
         <div style="display:flex;align-items:center;gap:10px"><span style="font:600 10.5px Inter,sans-serif;color:#8A7FA8;width:30px">Max</span><input type="range" min="1" max="6" step="0.5" value="{{priceMax}}" onInput="{{setPriceMax}}" style="flex:1;accent-color:var(--acc)"></div>
 
         <div style="display:flex;align-items:center;justify-content:space-between;margin-top:22px;padding-top:16px;border-top:1px solid #ECE7F1">
-          <div><div style="font:600 13px Inter,sans-serif;color:#1E1145">Verified only</div><div style="font:500 11px Inter,sans-serif;color:#A99FBF;margin-top:2px">RERA-valid CPs only</div></div>
+          <div><div style="font:600 13px Inter,sans-serif;color:#1E1145">Verified only</div><div style="font:500 11px Inter,sans-serif;color:#A99FBF;margin-top:2px">Show verified partners only</div></div>
           <div onClick="{{toggleRera}}" style="width:42px;height:24px;border-radius:14px;background:{{reraToggleBg}};position:relative;cursor:pointer;transition:background .2s"><div style="position:absolute;top:2px;left:{{reraToggleX}};width:20px;height:20px;background:#fff;border-radius:50%;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)"></div></div>
         </div>
 
@@ -576,6 +576,7 @@
         <div style="flex:1;position:relative">
           <div style="display:flex;align-items:center;gap:12px">
             <h1 style="font:800 26px Montserrat,sans-serif;margin:0">{{sel.firm}}</h1>
+            <sc-if value="{{sel.verified}}" hint-placeholder-val="{{true}}"><svg width="22" height="22" viewBox="0 0 24 24" style="display:block;flex:none" title="Verified"><path d="M12 1.5l2.6 1.9 3.2-.3 1 3.05 2.7 1.75-1.15 3 1.15 3-2.7 1.75-1 3.05-3.2-.3L12 22.5l-2.6-1.9-3.2.3-1-3.05L2.5 16.05l1.15-3L2.5 10.05 5.2 8.3l1-3.05 3.2.3z" fill="#22C55E"></path><path d="M8 12.2l2.7 2.7 5.3-5.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg></sc-if>
             <span style="font:600 12px Inter,sans-serif;color:rgba(255,255,255,.55)">{{sel.xr}}</span>
             <span style="font:700 11.5px Inter,sans-serif;padding:5px 13px;border-radius:20px;background:rgba(184,150,62,.2);color:#E9C877;border:1px solid rgba(184,150,62,.4)">{{sel.quadLabel}}</span>
           </div>
@@ -974,7 +975,7 @@
         </div>
         <sc-for list="{{dirRows}}" as="d" hint-placeholder-count="8">
           <div style="display:grid;grid-template-columns:2fr 1.5fr 1fr .8fr 1.6fr;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid #F6F3FA">
-            <div onClick="{{d.onView}}" style="cursor:pointer;min-width:0"><div style="font:600 13.5px Inter,sans-serif;color:#1E1145;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{d.firm}}</div><div style="font:500 11px Inter,sans-serif;color:#A99FBF">{{d.xr}} · {{d.configs}}</div></div>
+            <div onClick="{{d.onView}}" style="cursor:pointer;min-width:0"><div style="display:flex;align-items:center;gap:6px"><span style="font:600 13.5px Inter,sans-serif;color:#1E1145;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{d.firm}}</span><sc-if value="{{d.verified}}" hint-placeholder-val="{{true}}"><svg width="15" height="15" viewBox="0 0 24 24" style="display:block;flex:none"><path d="M12 1.5l2.6 1.9 3.2-.3 1 3.05 2.7 1.75-1.15 3 1.15 3-2.7 1.75-1 3.05-3.2-.3L12 22.5l-2.6-1.9-3.2.3-1-3.05L2.5 16.05l1.15-3L2.5 10.05 5.2 8.3l1-3.05 3.2.3z" fill="#16A34A"></path><path d="M8 12.2l2.7 2.7 5.3-5.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg></sc-if></div><div style="font:500 11px Inter,sans-serif;color:#A99FBF">{{d.xr}} · {{d.configs}}</div></div>
             <div style="font:500 12px Inter,sans-serif;color:#6B6285;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{d.markets}}</div>
             <div><span style="font:700 10px Inter,sans-serif;letter-spacing:.4px;text-transform:uppercase;padding:3px 9px;border-radius:20px;background:{{d.catBg}};color:{{d.catColor}}">{{d.catLabel}}</span></div>
             <div style="font:800 14px Montserrat,sans-serif;color:#1E1145">{{d.score}}</div>
@@ -1246,6 +1247,7 @@ class Component extends DCLogic {
   pinPool = ['400095', '400064', '400066', '400097', '400103'];
   vdnbMap = { XR33921:22, XR022153:18, XR005158:21, XR33907:22, XR010233:20, XR029001:21, XR022413:27, XR000009:28, XR018842:30, XR041220:32 };
   newSet = ['XR010233', 'XR029001', 'XR018842'];
+  verifiedSet = ['XR33921', 'XR022153', 'XR005158', 'XR33907', 'XR010233', 'XR95002', 'XR95011', 'XR95020', 'XR95029', 'XR95038'];
 
   enrichStats = [
     { n:'2,532', l:'records corrected this quarter', c:'#8B5CF6' },
@@ -1508,6 +1510,7 @@ class Component extends DCLogic {
     return out;
   }
 
+  isVerified(cp) { return this.verifiedSet.includes(cp.xr); }
   matchCriteria(cp) {
     const st = this.state;
     if (st.pins.length && !cp.pinCodes.some(p => st.pins.includes(p))) return false;
@@ -1516,7 +1519,7 @@ class Component extends DCLogic {
     if (st.advDevTypes.length && !cp.devTypes.some(d => st.advDevTypes.includes(d))) return false;
     if (cp.projectsDone < st.advMinProjects) return false;
     if (cp.lastActiveDays > st.advActive) return false;
-    if (st.reraOnly && cp.rera !== 'ok') return false;
+    if (st.reraOnly && !this.isVerified(cp)) return false;
     return true;
   }
   buildRow(cp) {
@@ -1533,7 +1536,7 @@ class Component extends DCLogic {
       quadLabel: q.label, quadColor: q.color, quadBg: q.bg,
       breakdown: this.makeBreakdown(cp), summary: this.makeSummary(cp),
       popoverOpen: open,
-      showVerified: this.state.reraOnly && cp.rera === 'ok',
+      showVerified: this.isVerified(cp),
       onTieUp: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.tieUp(cp.xr, cp.firm); },
       onCall: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.showToast('Calling ' + cp.firm + ' · ' + cp.phone); },
       onEmail: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.showToast('Email drafted to ' + cp.email); },
@@ -1564,7 +1567,7 @@ class Component extends DCLogic {
     const cpCity = (cp.markets || '').split('·')[0].trim();
     const tied = this.launches.filter(l => l.city && (cpCity.startsWith(l.city.split(' ')[0]) || (cp.markets || '').includes(l.city.split(' ')[0])));
     return {
-      ...cp, score: this.dynScore(cp), quadLabel: q.label, breakdown: this.makeBreakdown(cp), completeness,
+      ...cp, score: this.dynScore(cp), verified: this.isVerified(cp), quadLabel: q.label, breakdown: this.makeBreakdown(cp), completeness,
       vdnb, vdnbColor: vc.c, vdnbBg: vc.bg, vdnbLabel: vc.lbl, newInMarket: this.newSet.includes(cp.xr),
       reraChipText: reraOk ? 'Valid' : 'Expiring 30d', reraChipBg: reraOk ? '#E4F3EC' : '#FEF0E1', reraChipColor: reraOk ? '#1E8E5A' : '#D97706',
       gstChipText: cp.gst ? 'Active' : 'Not on file', gstChipBg: cp.gst ? '#E4F3EC' : '#FEF0E1', gstChipColor: cp.gst ? '#1E8E5A' : '#D97706',
@@ -1636,7 +1639,7 @@ class Component extends DCLogic {
     const dirSlice = dirFiltered.slice(dirPage * DIR_PS, dirPage * DIR_PS + DIR_PS);
     const dirActBtn = 'width:32px;height:32px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;border:1px solid #ECE7F1;background:#fff;color:#6B6285';
     const dirRows = dirSlice.map(c => { const m = qm[c.quad]; return {
-      firm: c.firm, xr: c.xr, configs: c.configs, markets: c.markets, score: c.score,
+      firm: c.firm, xr: c.xr, configs: c.configs, markets: c.markets, score: c.score, verified: this.isVerified(c),
       catLabel: m.label, catColor: m.color, catBg: m.bg,
       onView: () => this.openProfile(c.xr),
       onCall: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.showToast('Calling ' + c.firm + ' · ' + c.phone); },
