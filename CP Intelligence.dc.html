@@ -847,7 +847,8 @@
           <div onClick="{{viewList}}" style="display:flex;align-items:center;gap:8px;font:600 12.5px Inter,sans-serif;color:#5B4E80;background:#F5F2F9;border:1px solid #ECE7F1;padding:8px 14px;border-radius:10px;cursor:pointer;transition:background .15s" style-hover="background:#ECE7F3">☰ View as list</div>
         </div>
 
-        <div style="position:relative;height:520px;margin-top:16px;border-radius:16px;overflow:hidden;border:1px solid #ECE7F1;box-shadow:var(--cardShadow)">
+        <div style="display:grid;grid-template-columns:1fr 340px;gap:16px;margin-top:16px">
+        <div style="position:relative;height:520px;border-radius:16px;overflow:hidden;border:1px solid #ECE7F1;box-shadow:var(--cardShadow)">
           <div id="cpi-map" style="position:absolute;inset:0;z-index:0;background:#E7ECEF"></div>
           <sc-if value="{{mapAddr}}" hint-placeholder-val="{{false}}">
             <div style="position:absolute;left:16px;top:16px;z-index:500;background:rgba(30,17,69,.92);color:#fff;border-radius:12px;padding:11px 15px;max-width:340px;box-shadow:0 12px 30px -14px rgba(0,0,0,.5)">
@@ -860,6 +861,40 @@
             <sc-for list="{{catLegend}}" as="c" hint-placeholder-count="5">
               <div style="display:flex;align-items:center;gap:9px;margin-bottom:6px"><span style="width:12px;height:12px;border-radius:3px;background:{{c.c}};flex:none;box-shadow:0 1px 2px rgba(0,0,0,.15)"></span><span style="font:600 11.5px Inter,sans-serif;color:#4B4568">{{c.label}}</span></div>
             </sc-for>
+          </div>
+        </div>
+
+          <!-- Nearby competitor projects side panel -->
+          <div style="height:520px;display:flex;flex-direction:column;border:1px solid #ECE7F1;border-radius:16px;background:#FBFAFD;box-shadow:var(--cardShadow);overflow:hidden">
+            <div style="padding:15px 16px 12px;border-bottom:1px solid #EFEAF5;background:#fff">
+              <div style="font:700 13.5px Montserrat,sans-serif;color:#1E1145">Nearby competitor projects</div>
+              <div style="font:500 11.5px Inter,sans-serif;color:#8A7FA8;margin-top:3px">{{competitorCount}} projects within 3 km · tap to locate</div>
+            </div>
+            <div style="flex:1;overflow-y:auto;padding:12px">
+              <sc-if value="{{competitorEmpty}}" hint-placeholder-val="{{false}}">
+                <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:24px 16px;color:#A99FBF">
+                  <div style="font-size:30px;margin-bottom:10px">🗺️</div>
+                  <div style="font:700 13px Montserrat,sans-serif;color:#6B6285">No nearby competitors</div>
+                  <div style="font:500 11.5px Inter,sans-serif;margin-top:5px;line-height:1.5">No competing projects found within 3 km of this launch.</div>
+                </div>
+              </sc-if>
+              <sc-for list="{{competitorList}}" as="p" hint-placeholder-count="7">
+                <div onClick="{{p.onClick}}" style="{{p.cardStyle}}">
+                  <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+                    <div style="min-width:0">
+                      <div style="font:700 13px Montserrat,sans-serif;color:#1E1145;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{p.name}}</div>
+                      <div style="font:500 11.5px Inter,sans-serif;color:#8A7FA8;margin-top:2px">{{p.dev}} · {{p.dist}}</div>
+                    </div>
+                    <span style="flex:none;font:700 9.5px Inter,sans-serif;text-transform:uppercase;letter-spacing:.4px;padding:3px 8px;border-radius:20px;color:{{p.statusColor}};background:{{p.statusBg}}">{{p.status}}</span>
+                  </div>
+                  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:9px">
+                    <span style="display:inline-flex;align-items:center;gap:5px;font:600 10.5px Inter,sans-serif;color:{{p.catColor}};background:{{p.catBg}};padding:3px 9px;border-radius:7px"><span style="width:7px;height:7px;border-radius:2px;background:{{p.catColor}}"></span>{{p.catLabel}}</span>
+                    <span style="font:600 10.5px Inter,sans-serif;color:#5B4E80;background:#F2EEF7;padding:3px 9px;border-radius:7px">{{p.config}}</span>
+                  </div>
+                  <div style="font:700 12px Montserrat,sans-serif;color:#2D2350;margin-top:9px">{{p.price}}</div>
+                </div>
+              </sc-for>
+            </div>
           </div>
         </div>
 
@@ -1197,6 +1232,7 @@ class Component extends DCLogic {
     matchTab: 'list',
     bulkOpen: null,
     bulkSel: [],
+    microSel: null,
     dirSearch: '',
     dirQuad: 'All',
     dirPage: 0,
@@ -1315,13 +1351,13 @@ class Component extends DCLogic {
   ];
 
   micro = [
-    { name:'Ajmera Manhattan', dev:'Ajmera', sold:66, asking:3.0, transacted:2.4, rate:23300, dist:1.2, cat:'luxury', mx:'58%', my:'20%', units:210, inv:72, growth:8, share:18, topcp:'Zubair Realty' },
-    { name:'Rustomjee Uptown', dev:'Rustomjee', sold:71, asking:2.8, transacted:2.35, rate:24500, dist:1.1, cat:'premium', mx:'19%', my:'28%', units:180, inv:52, growth:6, share:14, topcp:'Anita Fulara Estates' },
-    { name:'Oberoi Sky City', dev:'Oberoi Realty', sold:62, asking:3.4, transacted:2.9, rate:23200, dist:2.3, cat:'premium', mx:'82%', my:'40%', units:240, inv:91, growth:11, share:21, topcp:'Zubair Realty' },
-    { name:'Lodha Bellagio', dev:'Lodha Group', sold:54, asking:3.6, transacted:3.0, rate:26100, dist:1.9, cat:'mid', mx:'20%', my:'62%', units:160, inv:74, growth:9, share:12, topcp:'Synergy Enterprise' },
-    { name:'Kanakia Silicon Valley', dev:'Kanakia Spaces', sold:48, asking:2.4, transacted:2.05, rate:21900, dist:2.6, cat:'affordable', mx:'83%', my:'72%', units:200, inv:104, growth:4, share:9, topcp:'BR Real Estate' },
-    { name:'Kalpataru Elitus', dev:'Kalpataru', sold:58, asking:3.2, transacted:2.7, rate:24000, dist:1.5, cat:'mid', mx:'50%', my:'88%', units:190, inv:80, growth:7, share:15, topcp:'Prasad Properties' },
-    { name:'Raheja Exotica', dev:'Raheja', sold:40, asking:2.6, transacted:2.2, rate:23800, dist:0.6, cat:'mid', mx:'35%', my:'46%', units:150, inv:90, growth:3, share:7, topcp:'Home Circle Realty' },
+    { name:'Ajmera Manhattan', dev:'Ajmera', sold:66, asking:3.0, transacted:2.4, rate:23300, dist:1.2, cat:'luxury', config:'3 & 4 BHK', status:'Ongoing', mx:'58%', my:'20%', units:210, inv:72, growth:8, share:18, topcp:'Zubair Realty' },
+    { name:'Rustomjee Uptown', dev:'Rustomjee', sold:71, asking:2.8, transacted:2.35, rate:24500, dist:1.1, cat:'premium', config:'2 & 3 BHK', status:'Ongoing', mx:'19%', my:'28%', units:180, inv:52, growth:6, share:14, topcp:'Anita Fulara Estates' },
+    { name:'Oberoi Sky City', dev:'Oberoi Realty', sold:62, asking:3.4, transacted:2.9, rate:23200, dist:2.3, cat:'premium', config:'3 & 4 BHK', status:'Upcoming', mx:'82%', my:'40%', units:240, inv:91, growth:11, share:21, topcp:'Zubair Realty' },
+    { name:'Lodha Bellagio', dev:'Lodha Group', sold:54, asking:3.6, transacted:3.0, rate:26100, dist:1.9, cat:'mid', config:'2, 3 & 4 BHK', status:'Ongoing', mx:'20%', my:'62%', units:160, inv:74, growth:9, share:12, topcp:'Synergy Enterprise' },
+    { name:'Kanakia Silicon Valley', dev:'Kanakia Spaces', sold:48, asking:2.4, transacted:2.05, rate:21900, dist:2.6, cat:'affordable', config:'1 & 2 BHK', status:'Upcoming', mx:'83%', my:'72%', units:200, inv:104, growth:4, share:9, topcp:'BR Real Estate' },
+    { name:'Kalpataru Elitus', dev:'Kalpataru', sold:58, asking:3.2, transacted:2.7, rate:24000, dist:1.5, cat:'mid', config:'2 & 3 BHK', status:'Ready', mx:'50%', my:'88%', units:190, inv:80, growth:7, share:15, topcp:'Prasad Properties' },
+    { name:'Raheja Exotica', dev:'Raheja', sold:40, asking:2.6, transacted:2.2, rate:23800, dist:0.6, cat:'mid', config:'2 & 3 BHK', status:'Ready', mx:'35%', my:'46%', units:150, inv:90, growth:3, share:7, topcp:'Home Circle Realty' },
   ];
 
   freshness = [
@@ -1388,6 +1424,7 @@ class Component extends DCLogic {
       this._mapLaunch = cur.id;
       if (this._layer) this._map.removeLayer(this._layer);
       this._layer = L.layerGroup().addTo(this._map);
+      this._compMarkers = {};
       const a = cur.address;
       const q = a ? [a.street, a.locality, a.city, a.state, a.pin, 'India'].filter(Boolean).join(', ') : ((cur.city || 'Borivali West') + ', Mumbai, India');
       const cols = { premium: '#2A6FDB', mid: '#1E8E5A', affordable: '#D97706', luxury: '#B8963E', completed: '#6B6285' };
@@ -1400,13 +1437,20 @@ class Component extends DCLogic {
           const d = (m.dist || 1) * 0.009;
           const col = cols[m.cat] || '#8B5CF6';
           const ic = L.divIcon({ className: '', html: '<div style="width:14px;height:14px;border-radius:50%;background:' + col + ';border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.4)"></div>', iconSize: [14, 14], iconAnchor: [7, 7] });
-          L.marker([c.lat + Math.sin(ang) * d, c.lng + Math.cos(ang) * d], { icon: ic }).addTo(this._layer).bindPopup('<b>' + m.name + '</b><br>' + m.dev + '<br>₹' + m.rate.toLocaleString('en-IN') + '/sq.ft · ' + m.dist + ' km');
+          const mk = L.marker([c.lat + Math.sin(ang) * d, c.lng + Math.cos(ang) * d], { icon: ic }).addTo(this._layer).bindPopup('<b>' + m.name + '</b><br>' + m.dev + '<br>₹' + m.rate.toLocaleString('en-IN') + '/sq.ft · ' + m.dist + ' km');
+          mk.on('click', () => this.setState({ microSel: m.name }));
+          this._compMarkers[m.name] = mk;
         });
         setTimeout(() => { if (this._map) this._map.invalidateSize(); }, 80);
       };
       if (cur.lat && cur.lng) place({ lat: cur.lat, lng: cur.lng });
       else this.geocode(q).then(c => { const center = c || { lat: 19.229, lng: 72.857 }; cur.lat = center.lat; cur.lng = center.lng; place(center); });
     });
+  }
+  focusCompetitor(name) {
+    this.setState({ microSel: name });
+    const mk = this._compMarkers && this._compMarkers[name];
+    if (mk && this._map) { this._map.setView(mk.getLatLng(), 15); mk.openPopup(); }
   }
 
   applyTheme() {
@@ -1835,6 +1879,22 @@ class Component extends DCLogic {
     const catLegend = [
       { label:'Premium', c:'#2A6FDB' }, { label:'Mid Segment', c:'#1E8E5A' }, { label:'Affordable', c:'#D97706' }, { label:'Luxury', c:'#B8963E' }, { label:'Completed', c:'#6B6285' },
     ];
+    const catMeta = { premium:{ label:'Premium', c:'#2A6FDB', bg:'#EAF1FC' }, mid:{ label:'Mid Segment', c:'#1E8E5A', bg:'#E4F3EC' }, affordable:{ label:'Affordable', c:'#D97706', bg:'#FEF0E1' }, luxury:{ label:'Luxury', c:'#B8963E', bg:'#F7F1E0' }, completed:{ label:'Completed', c:'#6B6285', bg:'#F1EEF7' } };
+    const statMeta = { Ready:{ c:'#1E8E5A', bg:'#E4F3EC' }, Ongoing:{ c:'#D97706', bg:'#FEF0E1' }, Upcoming:{ c:'#5B21B6', bg:'#F1EDFA' } };
+    const competitorList = this.micro.map(m => {
+      const cm = catMeta[m.cat] || catMeta.mid; const sm = statMeta[m.status] || statMeta.Ongoing;
+      const sel = s.microSel === m.name;
+      return {
+        name: m.name, dev: m.dev, dist: m.dist + ' km', config: m.config,
+        price: '₹' + m.transacted + '–' + m.asking + ' Cr',
+        status: m.status, statusColor: sm.c, statusBg: sm.bg,
+        catLabel: cm.label, catColor: cm.c, catBg: cm.bg,
+        onClick: () => this.focusCompetitor(m.name),
+        cardStyle: 'cursor:pointer;padding:12px 13px;border-radius:12px;margin-bottom:10px;transition:all .14s;border:1px solid ' + (sel ? 'var(--acc)' : '#EFEAF5') + ';background:' + (sel ? '#F6F2FE' : '#fff') + ';box-shadow:' + (sel ? '0 6px 18px -10px rgba(139,92,246,.5)' : '0 1px 2px rgba(30,17,69,.04)'),
+      };
+    });
+    const competitorCount = competitorList.length;
+    const competitorEmpty = competitorCount === 0;
     const byFirm = (name) => this.cpData.find(c => c.firm === name);
     const mkCp = (name) => { const c = byFirm(name); return { firm: name, onClick: () => { if (c) this.openProfile(c.xr); } }; };
     const overlap = [
@@ -2038,7 +2098,7 @@ class Component extends DCLogic {
       exportApproach: () => this.showToast('Shortlist exported · ' + pfCount + ' CPs (.csv)'),
       exportShortlist: () => this.showToast('Shortlist exported · ' + s.shortlist.length + ' CPs (.csv)'),
 
-      micro, overlap, microKpis, catLegend,
+      micro, overlap, microKpis, catLegend, competitorList, competitorCount, competitorEmpty,
       viewList: () => this.showToast('List view — showing all 7 projects as a table'),
 
       searchQuery: s.searchQuery,
