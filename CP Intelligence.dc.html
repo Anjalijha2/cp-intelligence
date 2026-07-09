@@ -1843,10 +1843,7 @@ class Component extends DCLogic {
 
     // scatter
     const dotColor = { pf:'#1E8E5A', tv:'#D97706', pl:'#8B5CF6', lo:'#9AA0B4' };
-    const scatterSource = [
-      ...this.cpData.map(c => ({ xr:c.xr, name:c.firm, score:c.score, quad:c.quad, fit:c.fit, proven:c.proven, inResults:true })),
-      ...this.scatterExtra.map(c => ({ ...c, inResults:false })),
-    ];
+    const scatterSource = matched.map(c => ({ xr:c.xr, name:c.firm, score:this.dynScore(c), quad:c.quad, fit:c.fit, proven:c.proven, inResults:true }));
     const dotOrder = [...scatterSource].sort((a, b) => a.score - b.score);
     const rankOf = {}; dotOrder.forEach((d, i) => { rankOf[d.xr] = i; });
     const scatterDots = scatterSource.map(d => {
@@ -1867,7 +1864,7 @@ class Component extends DCLogic {
         onClick: () => { if (d.inResults) this.openProfile(d.xr); },
       };
     });
-    const pfSource = this.cpData.filter(c => c.quad === 'pf').sort((a, b) => b.score - a.score);
+    const pfSource = matched.filter(c => c.quad === 'pf').sort((a, b) => this.dynScore(b) - this.dynScore(a));
     const pfCount = pfSource.length;
     const pfCardBase = 'display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:11px;margin-bottom:8px;cursor:pointer;transition:border-color .15s,background .15s;';
     const PF_CAP = 5;
@@ -1877,7 +1874,7 @@ class Component extends DCLogic {
     const pfToggleLabel = pfExpanded ? 'Show less' : ('+' + (pfSource.length - PF_CAP) + ' more partners');
     const pfToggleIcon = pfExpanded ? '−' : '+';
     const pfList = pfShown.map((c, idx) => { const hl = s.hoverDot === c.xr; return {
-      name:c.firm, xr:c.xr, score:c.score,
+      name:c.firm, xr:c.xr, score:this.dynScore(c),
       cardStyle: pfCardBase + 'border:1px solid ' + (hl ? 'var(--acc)' : '#F0ECF6') + ';background:' + (hl ? '#F4EFFC' : '#FAF8FD') + ';animation:fadeUp .42s cubic-bezier(.2,.8,.2,1) both;animation-delay:' + (idx * 75 + 260) + 'ms',
       onEnter: () => this.setState({ hoverDot: c.xr }), onLeave: () => this.setState({ hoverDot: null }),
       onClick: () => this.openProfile(c.xr),
@@ -1890,7 +1887,7 @@ class Component extends DCLogic {
       { key:'lo', title:'Unproven · low fit', sub:'Low priority', color:'#9AA0B4', tint:'#F7F7F9', border:'border-right:1px solid #ECE7F1' },
       { key:'tv', title:'Test & Validate', sub:'Fit but unproven', color:'#D97706', tint:'#FEF7EE', border:'' },
     ];
-    const allDots = [...this.cpData.map(c => ({ name:c.firm, xr:c.xr, score:c.score, quad:c.quad, inResults:true })), ...this.scatterExtra.map(c => ({ name:c.name, xr:c.xr, score:c.score, quad:c.quad, inResults:false }))];
+    const allDots = matched.map(c => ({ name:c.firm, xr:c.xr, score:this.dynScore(c), quad:c.quad, inResults:true }));
     const QUAD_CAP = 4;
     const quadCells = quadDefs.map((qd, ci) => {
       const allQ = allDots.filter(c => c.quad === qd.key).sort((a, b) => b.score - a.score);
