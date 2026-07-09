@@ -832,13 +832,13 @@
     <div style="padding:28px 34px 44px;animation:fadeUp .35s ease both">
       <div style="font:600 12px Inter,sans-serif;letter-spacing:1.5px;color:var(--acc);text-transform:uppercase">Micro-Market Command</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-top:6px">
-        <div><h1 style="font:800 24px Montserrat,sans-serif;margin:0">New Launch — Borivali West</h1><div style="font:500 13.5px Inter,sans-serif;color:#6B6285;margin-top:4px">The competitive terrain around your launch — projects, real prices, and where CPs already sell.</div></div>
+        <div><h1 style="font:800 24px Montserrat,sans-serif;margin:0">{{curLaunchName}}</h1><div style="font:500 13.5px Inter,sans-serif;color:#6B6285;margin-top:4px">The competitive terrain around your launch — projects, real prices, and where CPs already sell.</div></div>
       </div>
 
       <!-- takeaway strip -->
       <div style="display:flex;margin-top:20px;background:linear-gradient(120deg,#241350,#33205F);border-radius:14px;overflow:hidden;color:#fff">
         <div style="flex:1;padding:18px 24px;border-right:1px solid rgba(255,255,255,.1)"><div style="font:500 11px Inter,sans-serif;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.6px">Median transacted rate · 3 km</div><div style="font:800 22px Montserrat,sans-serif;margin-top:5px">₹22,800<span style="font:600 13px Montserrat;color:rgba(255,255,255,.6)">/sq ft</span></div></div>
-        <div style="flex:1;padding:18px 24px;border-right:1px solid rgba(255,255,255,.1)"><div style="font:500 11px Inter,sans-serif;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.6px">Competing launches · next 90 days</div><div style="font:800 22px Montserrat,sans-serif;margin-top:5px">4 projects</div></div>
+        <div style="flex:1;padding:18px 24px;border-right:1px solid rgba(255,255,255,.1)"><div style="font:500 11px Inter,sans-serif;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.6px">Competing launches · next 90 days</div><div style="font:800 22px Montserrat,sans-serif;margin-top:5px">7 projects</div></div>
         <div style="flex:1;padding:18px 24px"><div style="font:500 11px Inter,sans-serif;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.6px">Your matched CPs active in radius</div><div style="font:800 22px Montserrat,sans-serif;margin-top:5px">63 CPs</div></div>
       </div>
 
@@ -1587,6 +1587,49 @@ class Component extends DCLogic {
     });
     return out;
   }
+  // Guarantee the currently-selected location always shows some CPs: if no CP in
+  // cpData covers the selected pins, generate 3 robust generic CPs for that city.
+  ensureCitySeed() {
+    const s = this.state;
+    const pins = (s.pins && s.pins.length) ? s.pins : this.cityPins(s.geoState, s.geoDistrict, s.geoCity);
+    if (!pins || !pins.length) return;
+    const key = s.geoState + '/' + s.geoDistrict + '/' + s.geoCity;
+    this._seededCities = this._seededCities || {};
+    if (this._seededCities[key]) return;
+    this._seededCities[key] = true;
+    if (this.cpData.some(c => c.pinCodes.some(p => pins.includes(p)))) return; // real CPs already cover it
+    const W = this.weights;
+    const city = s.geoCity || 'This market';
+    const pool = [['Skyline Residency', 'Skyline'], ['Green Meadows', 'Godrej'], ['Metro Heights', 'Prestige'], ['Riverdale', 'Kalpataru']];
+    const tiers = [
+      { firm: city + ' Prime Realty', score: 88, quad: 'pf', proj: 8, act: 10, yrs: 11, fit: 86, proven: 90 },
+      { firm: city + ' Homes Advisors', score: 82, quad: 'pf', proj: 7, act: 16, yrs: 8, fit: 80, proven: 84 },
+      { firm: city + ' Estate Partners', score: 75, quad: 'tv', proj: 6, act: 24, yrs: 6, fit: 77, proven: 54 },
+    ];
+    const firsts = ['Rohan', 'Priya', 'Amit', 'Sneha', 'Vikram', 'Neha'];
+    const lasts = ['Sharma', 'Patel', 'Reddy', 'Nair', 'Gupta', 'Iyer'];
+    this._genN = (this._genN || 7000);
+    const out = tiers.map((t, ti) => {
+      const n = (this._genN += 1);
+      const owner = firsts[n % firsts.length] + ' ' + lasts[(n + ti) % lasts.length];
+      const slug = t.firm.toLowerCase().replace(/[^a-z]/g, '').slice(0, 14);
+      const got = W.map(w => Math.round(w * t.score / 100));
+      const alsoActive = [0, 1].map(k => { const d = pool[(ti + k) % pool.length]; return { p: d[0], dev: d[1], dist: (1.0 + k * 0.8).toFixed(1) + ' km', days: (7 + k * 6) + ' days ago' }; });
+      const track = [0, 1].map(k => { const d = pool[(ti + k) % pool.length]; return { p: d[0], u: 11 - ti * 2 - k, v: 17 + ti * 3 + k }; });
+      return {
+        xr: 'XR7' + n, firm: t.firm, owner,
+        phone: '+91 98' + String(200000 + n * 7).slice(0, 6),
+        email: owner.split(' ')[0].toLowerCase() + '@' + slug + '.in',
+        score: t.score, quad: t.quad, markets: city, configs: '1–4 BHK', configSet: ['1 BHK', '2 BHK', '3 BHK', '4 BHK'], pinCodes: [...pins],
+        priceLow: 1.0, priceHigh: 5.0, devTypes: ['Branded', 'Local'], projectsDone: t.proj,
+        lastActive: t.act + ' days ago', lastActiveDays: t.act, devCount: 4 + (2 - ti), years: t.yrs,
+        rera: 'ok', reraNum: 'A519' + (300000 + n) + ' · valid to Mar 2027',
+        pan: 'AABCP••••' + ((n % 9) + 1) + 'F', gst: true, gstNum: '27AABCP' + (1000 + (n % 9000)) + 'F1Z' + ((n % 9) + 1),
+        fit: t.fit, proven: t.proven, got, track, alsoActive,
+      };
+    });
+    this.cpData.push(...out);
+  }
 
   isVerified(cp) { return this.verifiedSet.includes(cp.xr); }
   matchCriteria(cp) {
@@ -1748,6 +1791,7 @@ class Component extends DCLogic {
       projects: (a, b) => b.projectsDone - a.projectsDone,
       name: (a, b) => a.firm.localeCompare(b.firm),
     };
+    this.ensureCitySeed();
     const matched = this.cpData.filter(cp => this.matchCriteria(cp)).sort(sortFns[s.sortBy] || sortFns.score);
     const displayRows = matched.map((cp, i) => { const r = this.buildRow(cp); r.anim = 'fadeUp .34s cubic-bezier(.2,.8,.2,1) both ' + (i * 45) + 'ms'; return r; });
     // CR-09: group matches into the 4 quadrant categories
