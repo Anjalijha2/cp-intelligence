@@ -1116,16 +1116,26 @@
         <div style="flex:1"><div style="{{lfLabel}}">Project name</div><input value="{{lf.name}}" onInput="{{onLfName}}" placeholder="e.g. Andheri Heights" style="{{lfInput}}"></div>
         <div style="flex:1"><div style="{{lfLabel}}">Developer</div><input value="{{lf.dev}}" onInput="{{onLfDev}}" placeholder="e.g. Lodha Group" style="{{lfInput}}"></div>
       </div>
-      <div style="{{lfSection}}">Target location — full address</div>
+      <div style="{{lfSection}}">Target location — search address</div>
+      <div data-lfaddr style="position:relative;margin-bottom:10px">
+        <div style="{{lfLabelSm}}">Search address</div>
+        <input value="{{lf.street}}" onInput="{{onLfAddr}}" placeholder="Start typing an address, area or landmark…" style="{{lfInput}}" autocomplete="off">
+        <sc-if value="{{lfSuggestOpen}}" hint-placeholder-val="{{false}}">
+          <div style="position:absolute;left:0;right:0;top:100%;margin-top:4px;z-index:60;background:#fff;border:1px solid #ECE7F1;border-radius:12px;box-shadow:0 18px 40px -16px rgba(30,17,69,.4);overflow:hidden">
+            <sc-for list="{{lfSuggestList}}" as="s" hint-placeholder-count="5">
+              <div onClick="{{s.onClick}}" style="display:flex;align-items:center;gap:9px;padding:10px 13px;cursor:pointer;font:500 12.5px Inter,sans-serif;color:#3B3357;border-bottom:1px solid #F4F1F8" style-hover="background:#F6F2FE"><span style="color:var(--acc)">📍</span>{{s.label}}</div>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
       <div style="display:flex;gap:10px;margin-bottom:10px">
-        <div style="flex:1.4"><div style="{{lfLabelSm}}">Street / Road</div><input value="{{lf.street}}" onInput="{{onLfStreet}}" placeholder="e.g. Link Road" style="{{lfInput}}"></div>
         <div style="flex:1"><div style="{{lfLabelSm}}">Locality</div><input value="{{lf.locality}}" onInput="{{onLfLocality}}" placeholder="e.g. IC Colony" style="{{lfInput}}"></div>
-        <div style="flex:.7"><div style="{{lfLabelSm}}">PIN</div><input value="{{lf.pin}}" onInput="{{onLfPin}}" placeholder="400092" style="{{lfInput}}"></div>
+        <div style="flex:.6"><div style="{{lfLabelSm}}">PIN</div><input value="{{lf.pin}}" onInput="{{onLfPin}}" placeholder="400092" style="{{lfInput}}"></div>
       </div>
       <div style="display:flex;gap:10px;margin-bottom:16px">
-        <div style="flex:1;min-width:0"><div style="{{lfLabelSm}}">State</div><select value="{{lf.state}}" onChange="{{onLfState}}" style="{{lfSelect}}"><option value="">Select State</option><sc-for list="{{lfStateOpts}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></div>
-        <div style="flex:1;min-width:0"><div style="{{lfLabelSm}}">District</div><select value="{{lf.district}}" onChange="{{onLfDistrict}}" style="{{lfSelect}}"><option value="">Select District</option><sc-for list="{{lfDistrictOpts}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></div>
-        <div style="flex:1;min-width:0"><div style="{{lfLabelSm}}">City / Area</div><select value="{{lf.city}}" onChange="{{onLfCity}}" style="{{lfSelect}}"><option value="">Select City</option><sc-for list="{{lfCityOpts}}" as="o" hint-placeholder-count="3"><option value="{{o}}">{{o}}</option></sc-for></select></div>
+        <div style="flex:1;min-width:0"><div style="{{lfLabelSm}}">Country</div><input value="{{lf.country}}" onInput="{{onLfCountry}}" placeholder="India" style="{{lfInput}}"></div>
+        <div style="flex:1;min-width:0"><div style="{{lfLabelSm}}">State</div><input value="{{lf.state}}" onInput="{{onLfState}}" placeholder="e.g. Maharashtra" style="{{lfInput}}"></div>
+        <div style="flex:1;min-width:0"><div style="{{lfLabelSm}}">District</div><input value="{{lf.district}}" onInput="{{onLfDistrict}}" placeholder="e.g. Mumbai Suburban" style="{{lfInput}}"></div>
       </div>
       <div style="{{lfSection}}">BHK configuration</div>
       <div style="display:flex;gap:8px;margin-bottom:16px">
@@ -1249,7 +1259,8 @@ class Component extends DCLogic {
     pfOpen: false,
     creatingLaunch: false,
     launchDrawer: false,
-    lf: { name: '', dev: '', street: '', locality: '', pin: '', state: '', district: '', city: '', configs: [], priceMin: 1, priceMax: 3, tier: 'Branded', status: 'active', units: '', notes: '' },
+    lf: { name: '', dev: '', street: '', locality: '', pin: '', country: 'India', state: '', district: '', city: '', lat: null, lng: null, placeId: '', formatted: '', configs: [], priceMin: 1, priceMax: 3, tier: 'Branded', status: 'active', units: '', notes: '' },
+    lfSuggest: [],
     costTip: false,
     hoverProj: null,
     showPwd: false,
@@ -1387,6 +1398,7 @@ class Component extends DCLogic {
       if (this.state.searchQuery && t.closest && !t.closest('[data-search]')) this.setState({ searchQuery: '' });
       if (this.state.sortOpen && t.closest && !t.closest('[data-sort]')) this.setState({ sortOpen: false });
       if (this.state.geoSearch && t.closest && !t.closest('[data-geo]')) this.setState({ geoSearch: '' });
+      if (this.state.lfSuggest.length && t.closest && !t.closest('[data-lfaddr]')) this.setState({ lfSuggest: [] });
     };
     document.addEventListener('mousedown', this._docClick);
   }
@@ -2064,17 +2076,16 @@ class Component extends DCLogic {
       lfInput: 'width:100%;height:42px;padding:0 13px;border:1px solid #ECE7F1;border-radius:11px;font:500 13.5px Inter,sans-serif;color:#1E1145;background:#FBFAFE',
       lfSelect: 'width:100%;height:42px;padding:0 11px;border:1px solid #ECE7F1;border-radius:11px;font:600 13px Inter,sans-serif;color:#3B3357;background:#FBFAFE;cursor:pointer',
       lfPriceLabel: '₹' + s.lf.priceMin + '.0 CR to ₹' + s.lf.priceMax + '.0 CR',
-      lfStateOpts: Object.keys(this.geoTree),
-      lfDistrictOpts: Object.keys(this.geoTree[s.lf.state] || {}),
-      lfCityOpts: Object.keys((this.geoTree[s.lf.state] || {})[s.lf.district] || {}),
+      lfSuggestOpen: s.lfSuggest.length > 0,
+      lfSuggestList: s.lfSuggest.map(f => ({ label: this.photonLabel(f), onClick: () => this.pickLfPlace(f) })),
       onLfName: (e) => this.setLf('name', e.target.value),
       onLfDev: (e) => this.setLf('dev', e.target.value),
-      onLfStreet: (e) => this.setLf('street', e.target.value),
+      onLfAddr: (e) => this.lfAddr(e.target.value),
       onLfLocality: (e) => this.setLf('locality', e.target.value),
       onLfPin: (e) => this.setLf('pin', e.target.value),
-      onLfState: (e) => this.setLfState(e.target.value),
-      onLfDistrict: (e) => this.setLfDistrict(e.target.value),
-      onLfCity: (e) => this.setLf('city', e.target.value),
+      onLfCountry: (e) => this.setLf('country', e.target.value),
+      onLfState: (e) => this.setLf('state', e.target.value),
+      onLfDistrict: (e) => this.setLf('district', e.target.value),
       onLfMin: (e) => this.setLf('priceMin', e.target.value),
       onLfMax: (e) => this.setLf('priceMax', e.target.value),
       onLfUnits: (e) => this.setLf('units', e.target.value),
@@ -2252,29 +2263,64 @@ class Component extends DCLogic {
   setLaunchFilter(f) { this.setState({ launchFilter: f }); }
   openLaunch(id) { const l = this.launches.find(x => x.id === id); this.setState({ currentLaunchId: id }); if (l) this.showToast('Viewing launch · ' + l.name); }
   applyCorrection(xr, field, before, after) { const cp = this.cpData.find(c => c.xr === xr); this.setState({ corrections: [{ firm: cp ? cp.firm : xr, xr, field, before, after, status: 'Verified', source: 'User' }, ...this.state.corrections] }); this.showToast('Record updated · ' + field); }
-  newLaunch() { this.setState({ launchDrawer: true, lf: { name: '', dev: '', street: '', locality: '', pin: '', state: '', district: '', city: '', configs: [], priceMin: 1, priceMax: 3, tier: 'Branded', status: 'active', units: '', notes: '' } }); }
-  closeLaunchDrawer() { this.setState({ launchDrawer: false }); }
+  newLaunch() { this.setState({ launchDrawer: true, lfSuggest: [], lf: { name: '', dev: '', street: '', locality: '', pin: '', country: 'India', state: '', district: '', city: '', lat: null, lng: null, placeId: '', formatted: '', configs: [], priceMin: 1, priceMax: 3, tier: 'Branded', status: 'active', units: '', notes: '' } }); }
+  closeLaunchDrawer() { this.setState({ launchDrawer: false, lfSuggest: [] }); }
   setLf(k, v) { this.setState({ lf: { ...this.state.lf, [k]: v } }); }
-  setLfState(v) { this.setState({ lf: { ...this.state.lf, state: v, district: '', city: '' } }); }
-  setLfDistrict(v) { this.setState({ lf: { ...this.state.lf, district: v, city: '' } }); }
   toggleLfConfig(c) { const cs = this.state.lf.configs; this.setLf('configs', cs.includes(c) ? cs.filter(x => x !== c) : [...cs, c]); }
+  // Free/keyless address autocomplete via Photon (OpenStreetMap). No API key.
+  photonLabel(f) { const p = f.properties || {}; return [p.name, p.street, p.district || p.city || p.county, p.state, p.country].filter(Boolean).filter((v, i, a) => a.indexOf(v) === i).join(', '); }
+  lfAddr(v) {
+    this.setLf('street', v);
+    clearTimeout(this._addrT);
+    if (!v || v.trim().length < 3) { this.setState({ lfSuggest: [] }); return; }
+    this._addrT = setTimeout(() => {
+      fetch('https://photon.komoot.io/api/?limit=6&lang=en&q=' + encodeURIComponent(v))
+        .then(r => r.json())
+        .then(d => { if (this.state.launchDrawer) this.setState({ lfSuggest: (d && d.features) ? d.features.slice(0, 6) : [] }); })
+        .catch(() => this.setState({ lfSuggest: [] }));
+    }, 250);
+  }
+  pickLfPlace(f) {
+    const p = f.properties || {};
+    const c = (f.geometry && f.geometry.coordinates) || [];
+    this.setState({
+      lfSuggest: [],
+      lf: {
+        ...this.state.lf,
+        street: p.street || p.name || this.state.lf.street,
+        locality: p.district || p.suburb || p.locality || '',
+        city: p.city || p.county || '',
+        district: p.county || p.district || p.city || '',
+        state: p.state || '',
+        country: p.country || 'India',
+        pin: p.postcode || '',
+        lat: (c.length === 2) ? c[1] : null,
+        lng: (c.length === 2) ? c[0] : null,
+        placeId: (p.osm_type || '') + ':' + (p.osm_id || ''),
+        formatted: this.photonLabel(f),
+      },
+    });
+  }
   submitLaunch() {
     const f = this.state.lf;
-    if (!f.name.trim() || !f.state || !f.city) { this.showToast('Add project name, state and city'); return; }
+    if (!f.name.trim() || !f.state) { this.showToast('Add a project name and state'); return; }
     const cfg = f.configs.length ? f.configs.map(c => c.replace(' BHK', '')).sort().join(' & ') + ' BHK' : '—';
     const seq = 143 + this.launches.filter(l => l.id.startsWith('LX-2026-01')).length;
     const id = 'LX-2026-0' + seq;
     const st = f.status === 'draft' ? 'draft' : 'active';
-    const addr = { building: f.name.trim(), street: f.street || '', locality: f.locality || '', city: f.city, state: f.state, pin: f.pin || '' };
-    const pins = this.cityPins(f.state, f.district, f.city);
-    const l = { id, name: f.name.trim(), city: f.city, config: cfg, price: '₹' + f.priceMin + '–' + f.priceMax + ' Cr', dev: f.tier, status: st, created: 'Today', matches: pins.length ? this.cpData.filter(c => c.pinCodes.some(p => pins.includes(p))).length : 0, shortlist: 0, units: f.units, notes: f.notes, address: addr, pins };
+    const city = f.city || f.district || f.locality || f.state;   // City field removed → derive a display label
+    const addr = { building: f.name.trim(), street: f.street || '', locality: f.locality || '', city, state: f.state, pin: f.pin || '', country: f.country || 'India' };
+    // Pins: use the picked PIN, else a geoTree city match, else a synthetic pin so matchCriteria + ensureCitySeed key on this launch.
+    let pins = f.pin ? [f.pin] : this.cityPins(f.state, f.district, f.city);
+    if (!pins.length) pins = ['LX' + seq];
+    const l = { id, name: f.name.trim(), city, config: cfg, price: '₹' + f.priceMin + '–' + f.priceMax + ' Cr', dev: f.tier, status: st, created: 'Today', matches: this.cpData.filter(c => c.pinCodes.some(p => pins.includes(p))).length, shortlist: 0, units: f.units, notes: f.notes, address: addr, pins, lat: f.lat, lng: f.lng };
     this.launches = [l, ...this.launches];
-    // CR-02: land on Launch Match showing this launch's CPs
+    // CR-02: land on Launch Match showing this launch's CPs (ensureCitySeed fills them for new locations)
     const devTypes = f.tier === 'All' ? ['Branded', 'Local'] : [f.tier];
     this.setState({
-      launchDrawer: false, currentLaunchId: id,
+      launchDrawer: false, lfSuggest: [], currentLaunchId: id,
       screen: st === 'draft' ? 'launches' : 'match', searchState: 'results',
-      geoState: f.state, geoDistrict: f.district || Object.keys(this.geoTree[f.state] || {})[0] || '', geoCity: f.city,
+      geoState: this.geoTree[f.state] ? f.state : this.state.geoState, geoDistrict: f.district || '', geoCity: city,
       pins: [...pins], configs: [...f.configs], priceMin: Number(f.priceMin) || 1, priceMax: Number(f.priceMax) || 4, advDevTypes: devTypes,
     });
     this.showToast((st === 'draft' ? 'Draft saved · ' : 'Launch created · ') + l.name);
