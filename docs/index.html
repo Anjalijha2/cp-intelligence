@@ -600,9 +600,17 @@
             <div><div style="font:500 11px Inter,sans-serif;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.6px">Experience</div><div style="font:600 14px Inter,sans-serif;margin-top:3px">{{sel.years}} years active</div></div>
           </div>
         </div>
-        <div style="display:flex;flex-direction:column;gap:10px;position:relative">
+        <div data-assign style="display:flex;flex-direction:column;gap:10px;position:relative">
           <button onClick="{{addShortlist}}" style="height:44px;padding:0 20px;border:none;border-radius:11px;background:{{shortlistBtnBg}};color:#fff;font:700 13px Montserrat,sans-serif;cursor:pointer;white-space:nowrap;transition:transform .12s" style-hover="transform:translateY(-1px)" style-active="transform:translateY(0) scale(.97)">{{shortlistBtnText}}</button>
-          <button onClick="{{assignMgr}}" style="height:44px;padding:0 20px;border:1px solid rgba(255,255,255,.3);border-radius:11px;background:transparent;color:#fff;font:700 13px Montserrat,sans-serif;cursor:pointer;white-space:nowrap;transition:transform .12s,background .15s" style-hover="background:rgba(255,255,255,.1)" style-active="transform:scale(.97)">Assign to Sourcing Manager</button>
+          <button onClick="{{toggleAssignMenu}}" style="height:44px;padding:0 20px;border:1px solid rgba(255,255,255,.3);border-radius:11px;background:transparent;color:#fff;font:700 13px Montserrat,sans-serif;cursor:pointer;white-space:nowrap;transition:transform .12s,background .15s" style-hover="background:rgba(255,255,255,.1)" style-active="transform:scale(.97)">{{assignBtnLabel}} ▾</button>
+          <sc-if value="{{assignMenuOpen}}" hint-placeholder-val="{{false}}">
+            <div style="position:absolute;top:100%;right:0;margin-top:6px;z-index:30;min-width:220px;background:#fff;border-radius:12px;box-shadow:0 20px 50px -18px rgba(0,0,0,.55);overflow:hidden">
+              <div style="padding:10px 14px;border-bottom:1px solid #F0ECF6;font:700 10px Inter,sans-serif;letter-spacing:.6px;color:#8A7FA8;text-transform:uppercase">Assign to</div>
+              <sc-for list="{{assignUserRows}}" as="u" hint-placeholder-count="3">
+                <div onClick="{{u.onClick}}" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;cursor:pointer;font:600 13px Inter,sans-serif;color:#2D2350;border-bottom:1px solid #F4F1F8" style-hover="background:#F6F2FE"><span>{{u.name}}</span><sc-if value="{{u.current}}" hint-placeholder-val="{{false}}"><span style="color:#16A34A;font-weight:800">✓</span></sc-if></div>
+              </sc-for>
+            </div>
+          </sc-if>
         </div>
       </div>
 
@@ -1064,6 +1072,8 @@
                       <select value="{{card.statusKey}}" onChange="{{card.onStatus}}" style="height:32px;padding:0 9px;border:1px solid #ECE7F1;border-radius:8px;font:600 12px Inter,sans-serif;color:#3B3357;background:#FBFAFE;cursor:pointer"><sc-for list="{{slStatusSelOpts}}" as="o" hint-placeholder-count="8"><option value="{{o.v}}">{{o.l}}</option></sc-for></select>
                       <span style="font:600 10px Inter,sans-serif;color:#8A7FA8;text-transform:uppercase;letter-spacing:.4px;margin-left:6px">Move</span>
                       <select value="{{card.moveVal}}" onChange="{{card.onMove}}" style="height:32px;padding:0 9px;border:1px solid #ECE7F1;border-radius:8px;font:600 12px Inter,sans-serif;color:#3B3357;background:#FBFAFE;cursor:pointer"><sc-for list="{{card.moveOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.v}}">{{o.l}}</option></sc-for></select>
+                      <span style="font:600 10px Inter,sans-serif;color:#8A7FA8;text-transform:uppercase;letter-spacing:.4px;margin-left:6px">Owner</span>
+                      <select value="{{card.ownerVal}}" onChange="{{card.onOwner}}" style="height:32px;padding:0 9px;border:1px solid #ECE7F1;border-radius:8px;font:600 12px Inter,sans-serif;color:#3B3357;background:#FBFAFE;cursor:pointer"><sc-for list="{{slUserSelOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.v}}">{{o.l}}</option></sc-for></select>
                     </div>
                     <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px">
                       <div onClick="{{card.onContacted}}" style="{{slQaStyle}}">✔ Contacted</div>
@@ -1375,6 +1385,7 @@ class Component extends DCLogic {
     slCollapsed: {},       // { catId: true } collapsed sections
     slLogOpen: null,       // xr whose timeline is expanded
     slFilter: { status: 'all', cat: 'all', city: 'all', assigned: 'all', verified: false, sort: 'updated' },
+    assignMenu: false,
     hoverDot: null,
     bellOpen: false,
     searchQuery: '',
@@ -1581,6 +1592,7 @@ class Component extends DCLogic {
       if (this.state.geoSearch && t.closest && !t.closest('[data-geo]')) this.setState({ geoSearch: '' });
       if (this.state.lfSuggest.length && t.closest && !t.closest('[data-lfaddr]')) this.setState({ lfSuggest: [] });
       if (this.state.slLaunchDropOpen && t.closest && !t.closest('[data-sllaunch]')) this.setState({ slLaunchDropOpen: false });
+      if (this.state.assignMenu && t.closest && !t.closest('[data-assign]')) this.setState({ assignMenu: false });
     };
     document.addEventListener('mousedown', this._docClick);
   }
@@ -1778,6 +1790,14 @@ class Component extends DCLogic {
     if (it.status === k) return;
     st.items[xr] = { ...it, status: k, log: [...it.log, { d: this.slToday(), t: this.slLabel(k) }] };
     this.forceUpdate(); this.showToast('Status → ' + this.slLabel(k));
+  }
+  slAssign(xr, firm, user) {
+    const st = this.slFor();
+    if (!st.items[xr]) { const c = st.cats[0]; this._slAddItem(st, xr, c.id, c.name); }
+    const it = st.items[xr];
+    if (it.assigned !== user) st.items[xr] = { ...it, assigned: user, log: [...it.log, { d: this.slToday(), t: 'Assigned to ' + user }] };
+    this.setState({ assignMenu: false });
+    this.forceUpdate(); this.showToast((firm || 'CP') + ' assigned to ' + user);
   }
   slMoveItem(xr, catId) {
     const st = this.slFor(); const it = st.items[xr]; const cat = st.cats.find(c => c.id === catId); if (!it || !cat) return;
@@ -2282,7 +2302,7 @@ class Component extends DCLogic {
       return {
         xr: cp.xr, firm: cp.firm, city: cp.markets, score: this.dynScore(cp), verified: this.isVerified(cp),
         statusKey: it.status, statusLabel: m.label, statusColor: m.c, statusBg: m.bg,
-        assigned: it.assigned, added: it.added,
+        assigned: it.assigned, added: it.added, ownerVal: it.assigned || '', onOwner: (e) => this.slAssign(cp.xr, cp.firm, e.target.value),
         onStatus: (e) => this.slSetStatus(cp.xr, e.target.value),
         moveOpts: slStore.cats.map(c => ({ v: c.id, l: c.name })),
         moveVal: it.cat,
@@ -2321,6 +2341,7 @@ class Component extends DCLogic {
     const slCatFilterOpts = [{ v: 'all', l: 'All categories' }].concat(slStore.cats.map(c => ({ v: c.id, l: c.name })));
     const slCityFilterOpts = [{ v: 'all', l: 'All cities' }].concat([...new Set(slAll.map(o => o.cp.markets))].map(c => ({ v: c, l: c })));
     const slAssignedFilterOpts = [{ v: 'all', l: 'All users' }].concat(this.slUsers.map(u => ({ v: u, l: u })));
+    const slUserSelOpts = this.slUsers.map(u => ({ v: u, l: u }));
     const slAddOpen = !!s.slAdd;
     const slAddTitle = (s.slAdd && s.slAdd.bulk) ? ('Add ' + s.slAdd.bulk.length + ' CPs to shortlist') : ('Add ' + ((s.slAdd && s.slAdd.firm) || 'CP') + ' to shortlist');
     const slAddCats = slStore.cats.map(c => ({ name: c.name, count: slAll.filter(o => o.it.cat === c.id).length, onClick: () => this.slAddToCat(c.id) }));
@@ -2335,6 +2356,7 @@ class Component extends DCLogic {
 
     const sel = this.buildSel();
     const inShortlist = this.slHas(sel.xr);
+    const profileAssignee = (this.slFor().items[sel.xr] || {}).assigned || null;
     const backMap = { match: '← Back to matches', quadrant: '← Back to quadrant', micro: '← Back to Micro-Market', dashboard: '← Back to dashboard' };
 
     return {
@@ -2509,7 +2531,11 @@ class Component extends DCLogic {
       slQaTieStyle: 'padding:6px 11px;border-radius:8px;cursor:pointer;font:700 11px Inter,sans-serif;color:#fff;background:#1E8E5A;border:1px solid #1E8E5A',
       slQaGhostStyle: 'padding:6px 11px;border-radius:8px;cursor:pointer;font:600 11px Inter,sans-serif;color:#5B4E80;background:#F5F2F9;border:1px solid #ECE7F1',
       slQaRemoveStyle: 'padding:6px 11px;border-radius:8px;cursor:pointer;font:600 11px Inter,sans-serif;color:#DC2626;border:1px solid #F3D3D3;background:#fff',
-      assignMgr: () => this.showToast('Assigned to Sourcing Manager — Rohit K.'),
+      slUserSelOpts,
+      assignBtnLabel: profileAssignee ? ('Owner · ' + profileAssignee) : 'Assign to Sourcing Manager',
+      assignMenuOpen: s.assignMenu,
+      toggleAssignMenu: () => this.setState({ assignMenu: !this.state.assignMenu }),
+      assignUserRows: this.slUsers.map(u => ({ name: u, current: u === profileAssignee, onClick: () => this.slAssign(sel.xr, sel.firm, u) })),
       profileActBtn: 'padding:9px 16px;border-radius:10px;cursor:pointer;font:600 12.5px Inter,sans-serif;color:#4B4568;border:1px solid #ECE7F1;background:#fff;white-space:nowrap',
       profileCall: () => this.showToast('Calling ' + sel.firm + ' · ' + sel.phone),
       profileEmail: () => this.showToast('Email drafted to ' + sel.email),
