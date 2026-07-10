@@ -154,6 +154,7 @@
     <div style="{{navRefresh}}" onClick="{{goRefresh}}" style-active="transform:scale(.98)"><span style="width:18px;display:inline-flex">▥</span>CP Directory</div>
     <div style="{{navMatch}}" onClick="{{goMatch}}" style-active="transform:scale(.98)"><span style="width:18px;display:inline-flex">◎</span>Launch Match</div>
     <div style="{{navMicro}}" onClick="{{goMicro}}" style-active="transform:scale(.98)"><span style="width:18px;display:inline-flex">◈</span>Micro-Market</div>
+    <div style="{{navShort}}" onClick="{{goShortlist}}" style-active="transform:scale(.98)"><span style="width:18px;display:inline-flex">★</span>Shortlist</div>
     <div onClick="{{goLaunches}}" style="margin-top:auto;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:13px;padding:14px 15px;cursor:pointer;transition:background .15s" style-hover="background:rgba(255,255,255,.09)">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px"><span style="font:600 11px Inter,sans-serif;color:#B8963E;letter-spacing:.5px">CURRENT LAUNCH</span><span style="font:700 9px Inter,sans-serif;letter-spacing:.4px;text-transform:uppercase;color:{{curLaunchStColor}};background:{{curLaunchStBg}};padding:2px 7px;border-radius:20px">{{curLaunchStLabel}}</span></div>
       <div style="font:700 13px Montserrat,sans-serif;color:#fff;line-height:1.25">{{curLaunchName}}</div>
@@ -417,6 +418,13 @@
           <div style="display:inline-flex;gap:6px;margin-top:14px;background:#F5F2F9;padding:5px;border-radius:12px">
             <div onClick="{{showList}}" style="{{tabListStyle}}">Matching Channel Partners</div>
             <div onClick="{{showQuad}}" style="{{tabQuadStyle}}">Quadrant View</div>
+          </div>
+          <div onClick="{{goShortlistCur}}" style="display:flex;gap:0;margin-top:16px;border:1px solid #ECE7F1;border-radius:13px;overflow:hidden;cursor:pointer;box-shadow:var(--cardShadow)" style-hover="border-color:#D9CEF3">
+            <div style="flex:1;padding:11px 15px;border-right:1px solid #F2EEF7"><div style="font:500 10px Inter,sans-serif;color:#8A7FA8;text-transform:uppercase;letter-spacing:.4px">Matches</div><div style="font:800 17px Montserrat,sans-serif;color:#1E1145;margin-top:3px">{{slSummary.matches}}</div></div>
+            <div style="flex:1;padding:11px 15px;border-right:1px solid #F2EEF7"><div style="font:500 10px Inter,sans-serif;color:#8A7FA8;text-transform:uppercase;letter-spacing:.4px">Shortlisted</div><div style="font:800 17px Montserrat,sans-serif;color:#5B21B6;margin-top:3px">{{slSummary.shortlisted}}</div></div>
+            <div style="flex:1;padding:11px 15px;border-right:1px solid #F2EEF7"><div style="font:500 10px Inter,sans-serif;color:#8A7FA8;text-transform:uppercase;letter-spacing:.4px">Contacted</div><div style="font:800 17px Montserrat,sans-serif;color:#2A6FDB;margin-top:3px">{{slSummary.contacted}}</div></div>
+            <div style="flex:1;padding:11px 15px;border-right:1px solid #F2EEF7"><div style="font:500 10px Inter,sans-serif;color:#8A7FA8;text-transform:uppercase;letter-spacing:.4px">Meetings</div><div style="font:800 17px Montserrat,sans-serif;color:#8B5CF6;margin-top:3px">{{slSummary.meetings}}</div></div>
+            <div style="flex:1;padding:11px 15px"><div style="font:500 10px Inter,sans-serif;color:#8A7FA8;text-transform:uppercase;letter-spacing:.4px">Finalised</div><div style="font:800 17px Montserrat,sans-serif;color:#1E8E5A;margin-top:3px">{{slSummary.final}}</div></div>
           </div>
         </div>
 
@@ -815,7 +823,8 @@
             <div style="min-width:0"><div style="font:600 12px Inter,sans-serif;color:#4B4568">{{l.config}}</div><div style="font:500 11px Inter,sans-serif;color:#A99FBF;margin-top:2px">{{l.price}} · {{l.dev}}</div></div>
             <div style="font:500 12px Inter,sans-serif;color:#6B6285">{{l.created}}<div style="font:500 10.5px Inter,sans-serif;color:#A99FBF;margin-top:2px">{{l.subMetric}}</div></div>
             <div><span style="display:inline-flex;align-items:center;gap:6px;font:700 10.5px Inter,sans-serif;color:{{l.stColor}};background:{{l.stBg}};padding:4px 10px;border-radius:20px"><span style="width:6px;height:6px;border-radius:50%;background:{{l.stColor}}"></span>{{l.stLabel}}</span></div>
-            <div style="display:flex;gap:7px;justify-content:flex-end;flex-wrap:wrap">
+            <div style="display:flex;gap:7px;justify-content:flex-end;flex-wrap:wrap;align-items:center">
+              <div onClick="{{l.openSl}}" style="font:700 10.5px Inter,sans-serif;color:#5B21B6;background:#F1EDFA;border:1px solid #E1D7F5;padding:5px 10px;border-radius:20px;cursor:pointer;white-space:nowrap" style-hover="background:#E7DEF9">{{l.slBadge}}</div>
               <sc-for list="{{l.actions}}" as="a" hint-placeholder-count="2">
                 <div onClick="{{a.onClick}}" style="{{a.style}}">{{a.label}}</div>
               </sc-for>
@@ -962,6 +971,136 @@
     </div>
     </sc-if>
 
+    <!-- ---------- LAUNCH SHORTLIST BOARD ---------- -->
+    <sc-if value="{{onShortlist}}" hint-placeholder-val="{{false}}">
+    <div style="padding:28px 34px 60px;animation:fadeUp .35s ease both">
+      <div style="font:600 12px Inter,sans-serif;letter-spacing:1.5px;color:var(--acc);text-transform:uppercase">Launch Shortlist</div>
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-top:6px;flex-wrap:wrap;gap:12px">
+        <div><h1 style="font:800 24px Montserrat,sans-serif;margin:0">{{curLaunchName}}</h1><div style="font:500 13.5px Inter,sans-serif;color:#6B6285;margin-top:4px">Organise partners into categories, track each from contact to tie-up, and finalise your launch team.</div></div>
+        <div style="display:flex;gap:9px">
+          <div onClick="{{slManageToggle}}" style="padding:10px 15px;border-radius:11px;cursor:pointer;font:600 12.5px Inter,sans-serif;color:#5B4E80;background:#F5F2F9;border:1px solid #ECE7F1">⚙ Manage categories</div>
+          <div onClick="{{exportShortlist}}" style="padding:10px 15px;border-radius:11px;cursor:pointer;font:700 12.5px Montserrat,sans-serif;color:#fff;background:#241350">↓ Export</div>
+        </div>
+      </div>
+
+      <!-- summary widget -->
+      <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-top:20px">
+        <div style="background:#fff;border:1px solid #ECE7F1;border-radius:14px;padding:15px 16px;box-shadow:var(--cardShadow)"><div style="font:500 11px Inter,sans-serif;color:#8A7FA8">Total Matches</div><div style="font:800 22px Montserrat,sans-serif;color:#1E1145;margin-top:5px">{{slSummary.matches}}</div></div>
+        <div style="background:#fff;border:1px solid #ECE7F1;border-radius:14px;padding:15px 16px;box-shadow:var(--cardShadow)"><div style="font:500 11px Inter,sans-serif;color:#8A7FA8">Shortlisted</div><div style="font:800 22px Montserrat,sans-serif;color:#5B21B6;margin-top:5px">{{slSummary.shortlisted}}</div></div>
+        <div style="background:#fff;border:1px solid #ECE7F1;border-radius:14px;padding:15px 16px;box-shadow:var(--cardShadow)"><div style="font:500 11px Inter,sans-serif;color:#8A7FA8">Contacted</div><div style="font:800 22px Montserrat,sans-serif;color:#2A6FDB;margin-top:5px">{{slSummary.contacted}}</div></div>
+        <div style="background:#fff;border:1px solid #ECE7F1;border-radius:14px;padding:15px 16px;box-shadow:var(--cardShadow)"><div style="font:500 11px Inter,sans-serif;color:#8A7FA8">Meetings</div><div style="font:800 22px Montserrat,sans-serif;color:#8B5CF6;margin-top:5px">{{slSummary.meetings}}</div></div>
+        <div style="background:#fff;border:1px solid #ECE7F1;border-radius:14px;padding:15px 16px;box-shadow:var(--cardShadow)"><div style="font:500 11px Inter,sans-serif;color:#8A7FA8">Tie-up Done</div><div style="font:800 22px Montserrat,sans-serif;color:#1E8E5A;margin-top:5px">{{slSummary.tieup}}</div></div>
+        <div style="background:linear-gradient(135deg,#1E8E5A,#0F6B41);border-radius:14px;padding:15px 16px;color:#fff"><div style="font:500 11px Inter,sans-serif;color:rgba(255,255,255,.75)">Final Selected</div><div style="font:800 22px Montserrat,sans-serif;margin-top:5px">{{slSummary.final}}</div></div>
+      </div>
+
+      <!-- filters -->
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:20px">
+        <sc-for list="{{slStatusChips}}" as="chip" hint-placeholder-count="4"><div onClick="{{chip.onClick}}" style="{{chip.style}}">{{chip.label}}</div></sc-for>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;align-items:center">
+        <div onClick="{{toggleSlVerified}}" style="display:flex;align-items:center;gap:8px;padding:8px 13px;border-radius:10px;cursor:pointer;font:600 12px Inter,sans-serif;border:1px solid {{slVerBorder}};background:{{slVerBg}};color:{{slVerColor}}"><span>{{slVerMark}}</span> Verified only</div>
+        <select value="{{slFilterCat}}" onChange="{{onSlFilterCat}}" style="{{slFilterSelStyle}}"><sc-for list="{{slCatFilterOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.v}}">{{o.l}}</option></sc-for></select>
+        <select value="{{slFilterCity}}" onChange="{{onSlFilterCity}}" style="{{slFilterSelStyle}}"><sc-for list="{{slCityFilterOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.v}}">{{o.l}}</option></sc-for></select>
+        <select value="{{slFilterAssigned}}" onChange="{{onSlFilterAssigned}}" style="{{slFilterSelStyle}}"><sc-for list="{{slAssignedFilterOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.v}}">{{o.l}}</option></sc-for></select>
+        <select value="{{slFilterSort}}" onChange="{{onSlFilterSort}}" style="{{slFilterSelStyle}}"><option value="updated">Sort: Last updated</option><option value="fit">Sort: Fit score</option></select>
+      </div>
+
+      <!-- manage categories -->
+      <sc-if value="{{slManage}}" hint-placeholder-val="{{false}}">
+        <div style="margin-top:16px;background:#FBFAFE;border:1px solid #ECE7F1;border-radius:14px;padding:16px">
+          <div style="font:700 11px Inter,sans-serif;letter-spacing:.5px;color:#5B4E80;text-transform:uppercase;margin-bottom:10px">Add a category</div>
+          <div style="display:flex;gap:8px;max-width:460px"><input value="{{slNewCat}}" onInput="{{onSlNewCat}}" placeholder="e.g. Local Experts" style="flex:1;height:40px;padding:0 12px;border:1px solid #ECE7F1;border-radius:10px;font:500 13px Inter,sans-serif;color:#1E1145;background:#fff"><div onClick="{{slCreateCat}}" style="display:flex;align-items:center;padding:0 18px;border-radius:10px;cursor:pointer;font:700 12.5px Montserrat,sans-serif;color:#fff;background:linear-gradient(135deg,var(--acc),var(--acc2))">Create</div></div>
+          <div style="font:500 11.5px Inter,sans-serif;color:#A99FBF;margin-top:9px">Use the ↑ ↓ ✎ ✕ controls on each section below to reorder, rename or delete.</div>
+        </div>
+      </sc-if>
+
+      <!-- final launch partners -->
+      <sc-if value="{{slHasFinal}}" hint-placeholder-val="{{false}}">
+        <div style="margin-top:22px;background:linear-gradient(135deg,#EDF7F1,#E2F3EA);border:1px solid #BFE6CF;border-radius:16px;padding:18px 20px">
+          <div style="display:flex;align-items:center;gap:9px;margin-bottom:12px"><span style="font:800 14px Montserrat,sans-serif;color:#0F6B41">🤝 Final Launch Partners</span><span style="font:700 11px Inter,sans-serif;color:#0F6B41;background:#CFEBDA;padding:2px 9px;border-radius:20px">{{slFinalCount}}</span></div>
+          <div style="display:flex;flex-wrap:wrap;gap:10px">
+            <sc-for list="{{slFinal}}" as="f" hint-placeholder-count="2">
+              <div onClick="{{f.onOpenProfile}}" style="display:flex;align-items:center;gap:9px;background:#fff;border:1px solid #BFE6CF;border-radius:11px;padding:9px 13px;cursor:pointer"><span style="color:#1E8E5A;font-weight:800">✔</span><span style="font:700 12.5px Inter,sans-serif;color:#1E1145">{{f.firm}}</span><span style="font:500 10.5px Inter,sans-serif;color:#A99FBF">{{f.xr}}</span></div>
+            </sc-for>
+          </div>
+          <div style="font:600 11.5px Inter,sans-serif;color:#0F6B41;margin-top:12px">Total Final Partners: {{slFinalCount}}</div>
+        </div>
+      </sc-if>
+
+      <!-- category board -->
+      <div style="margin-top:22px">
+        <sc-for list="{{slBoard}}" as="cat" hint-placeholder-count="3">
+          <div style="margin-bottom:18px;border:1px solid #ECE7F1;border-radius:16px;overflow:hidden;background:#fff;box-shadow:var(--cardShadow)">
+            <div style="display:flex;align-items:center;gap:10px;padding:14px 16px;background:#FBFAFE;border-bottom:1px solid #F0ECF6">
+              <span onClick="{{cat.onToggle}}" style="cursor:pointer;font-size:13px;color:#8A7FA8;width:14px">{{cat.caret}}</span>
+              <sc-if value="{{slManage}}" hint-placeholder-val="{{false}}">
+                <input value="{{cat.name}}" onInput="{{cat.onRename}}" style="font:800 14px Montserrat,sans-serif;color:#1E1145;border:1px solid #ECE7F1;border-radius:8px;padding:5px 9px;background:#fff;max-width:220px">
+              </sc-if>
+              <sc-if value="{{cat.notManage}}" hint-placeholder-val="{{true}}">
+                <span onClick="{{cat.onToggle}}" style="cursor:pointer;font:800 14px Montserrat,sans-serif;color:#1E1145">{{cat.name}}</span>
+              </sc-if>
+              <span style="font:700 11px Inter,sans-serif;color:#5B4E80;background:#F1EDFA;padding:2px 9px;border-radius:20px">{{cat.count}}</span>
+              <div style="flex:1"></div>
+              <sc-if value="{{slManage}}" hint-placeholder-val="{{false}}">
+                <span onClick="{{cat.onUp}}" style="cursor:pointer;color:#8A7FA8;padding:3px 7px;border:1px solid #ECE7F1;border-radius:7px;font-size:12px">↑</span>
+                <span onClick="{{cat.onDown}}" style="cursor:pointer;color:#8A7FA8;padding:3px 7px;border:1px solid #ECE7F1;border-radius:7px;font-size:12px;margin-left:5px">↓</span>
+                <span onClick="{{cat.onDelete}}" style="cursor:pointer;color:#DC2626;padding:3px 8px;border:1px solid #F3D3D3;border-radius:7px;font-size:12px;margin-left:5px">✕</span>
+              </sc-if>
+            </div>
+            <sc-if value="{{cat.open}}" hint-placeholder-val="{{true}}">
+              <div style="padding:14px 16px">
+                <sc-for list="{{cat.cards}}" as="card" hint-placeholder-count="2">
+                  <div style="border:1px solid #F0ECF6;border-radius:13px;padding:13px 14px;margin-bottom:11px;background:#fff">
+                    <div style="display:flex;align-items:center;gap:12px">
+                      <div onClick="{{card.onOpenProfile}}" style="cursor:pointer"><dc-import name="ScoreRing" score="{{card.score}}" size="42" variant="{{scoreStyle}}" hint-size="42px,42px"></dc-import></div>
+                      <div onClick="{{card.onOpenProfile}}" style="flex:1;min-width:0;cursor:pointer">
+                        <div style="display:flex;align-items:center;gap:7px"><span style="font:700 14px Montserrat,sans-serif;color:#1E1145">{{card.firm}}</span><sc-if value="{{card.verified}}" hint-placeholder-val="{{false}}"><span style="font-size:12px;color:#16A34A">✔</span></sc-if></div>
+                        <div style="font:500 11.5px Inter,sans-serif;color:#A99FBF;margin-top:2px">{{card.xr}} · {{card.city}} · {{card.assigned}}</div>
+                      </div>
+                      <span style="font:700 10.5px Inter,sans-serif;padding:5px 11px;border-radius:20px;color:{{card.statusColor}};background:{{card.statusBg}};white-space:nowrap">{{card.statusLabel}}</span>
+                    </div>
+                    <div style="display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-top:11px">
+                      <span style="font:600 10px Inter,sans-serif;color:#8A7FA8;text-transform:uppercase;letter-spacing:.4px">Status</span>
+                      <select value="{{card.statusKey}}" onChange="{{card.onStatus}}" style="height:32px;padding:0 9px;border:1px solid #ECE7F1;border-radius:8px;font:600 12px Inter,sans-serif;color:#3B3357;background:#FBFAFE;cursor:pointer"><sc-for list="{{slStatusSelOpts}}" as="o" hint-placeholder-count="8"><option value="{{o.v}}">{{o.l}}</option></sc-for></select>
+                      <span style="font:600 10px Inter,sans-serif;color:#8A7FA8;text-transform:uppercase;letter-spacing:.4px;margin-left:6px">Move</span>
+                      <select value="{{card.moveVal}}" onChange="{{card.onMove}}" style="height:32px;padding:0 9px;border:1px solid #ECE7F1;border-radius:8px;font:600 12px Inter,sans-serif;color:#3B3357;background:#FBFAFE;cursor:pointer"><sc-for list="{{card.moveOpts}}" as="o" hint-placeholder-count="3"><option value="{{o.v}}">{{o.l}}</option></sc-for></select>
+                    </div>
+                    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px">
+                      <div onClick="{{card.onContacted}}" style="{{slQaStyle}}">✔ Contacted</div>
+                      <div onClick="{{card.onMeetSched}}" style="{{slQaStyle}}">Meeting Scheduled</div>
+                      <div onClick="{{card.onMeetDone}}" style="{{slQaStyle}}">Meeting Done</div>
+                      <div onClick="{{card.onProposal}}" style="{{slQaStyle}}">Proposal Shared</div>
+                      <div onClick="{{card.onTieup}}" style="{{slQaTieStyle}}">🤝 Tie-up Done</div>
+                      <div onClick="{{card.onToggleLog}}" style="{{slQaGhostStyle}}">🕑 {{card.logLabel}}</div>
+                      <div onClick="{{card.onRemove}}" style="{{slQaRemoveStyle}}">Remove</div>
+                    </div>
+                    <sc-if value="{{card.logOpen}}" hint-placeholder-val="{{false}}">
+                      <div style="margin-top:11px;padding:12px 14px;background:#FBFAFE;border:1px solid #F0ECF6;border-radius:11px">
+                        <div style="font:700 10px Inter,sans-serif;letter-spacing:.5px;color:#8A7FA8;text-transform:uppercase;margin-bottom:9px">Activity timeline</div>
+                        <sc-for list="{{card.log}}" as="ev" hint-placeholder-count="3">
+                          <div style="display:flex;gap:12px;margin-bottom:8px"><span style="font:700 11px Inter,sans-serif;color:#5B21B6;width:52px;flex:none">{{ev.d}}</span><span style="font:500 12px Inter,sans-serif;color:#4B4568">{{ev.t}}</span></div>
+                        </sc-for>
+                      </div>
+                    </sc-if>
+                  </div>
+                </sc-for>
+                <sc-if value="{{cat.empty}}" hint-placeholder-val="{{false}}"><div style="text-align:center;padding:18px;font:500 12.5px Inter,sans-serif;color:#B4AAC8">No partners in this category{{catFilterNote}}.</div></sc-if>
+              </div>
+            </sc-if>
+          </div>
+        </sc-for>
+        <sc-if value="{{slBoardEmpty}}" hint-placeholder-val="{{false}}">
+          <div style="text-align:center;padding:60px 20px;background:#fff;border:1px dashed #E4DEEF;border-radius:16px">
+            <div style="font-size:34px;margin-bottom:10px">★</div>
+            <div style="font:700 15px Montserrat,sans-serif;color:#1E1145">No CPs shortlisted yet</div>
+            <div style="font:500 13px Inter,sans-serif;color:#8A7FA8;margin-top:6px">Go to Launch Match and tap “+ Shortlist” on any partner to start building your list.</div>
+            <div onClick="{{goMatch}}" style="display:inline-block;margin-top:16px;padding:10px 20px;border-radius:11px;cursor:pointer;font:700 12.5px Montserrat,sans-serif;color:#fff;background:linear-gradient(135deg,var(--acc),var(--acc2))">Go to Launch Match →</div>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+    </sc-if>
+
     <!-- ---------- REFRESH & VERIFY ---------- -->
     <sc-if value="{{onRefresh}}" hint-placeholder-val="{{false}}">
     <div style="padding:30px 34px 44px;animation:fadeUp .35s ease both">
@@ -1071,35 +1210,34 @@
 </div>
 </sc-if>
 
-<!-- shortlist slide-in -->
-<sc-if value="{{shortlistOpen}}" hint-placeholder-val="{{false}}">
-  <div onClick="{{closeShortlist}}" style="position:fixed;inset:0;background:rgba(30,17,69,.4);z-index:90;animation:fadeIn .2s ease both"></div>
-  <div style="position:fixed;top:0;right:0;bottom:0;width:384px;background:#fff;z-index:91;box-shadow:-20px 0 50px -20px rgba(30,17,69,.4);display:flex;flex-direction:column;animation:slideIn .28s cubic-bezier(.2,.8,.2,1) both">
-    <div style="padding:22px 24px;border-bottom:1px solid #ECE7F1;display:flex;align-items:center;justify-content:space-between">
-      <div><div style="font:800 17px Montserrat,sans-serif">Launch shortlist</div><div style="font:500 12px Inter,sans-serif;color:#8A7FA8;margin-top:2px">{{shortlistCount}} CPs saved for Borivali West</div></div>
-      <div onClick="{{closeShortlist}}" style="cursor:pointer;font-size:18px;color:#8A7FA8">✕</div>
-    </div>
-    <div style="flex:1;overflow:auto;padding:16px 20px">
-      <sc-if value="{{shortlistEmpty}}" hint-placeholder-val="{{false}}"><div style="text-align:center;padding:44px 20px;color:#8A7FA8;font:500 13px Inter,sans-serif">No CPs shortlisted yet. Add them from the matches or a profile.</div></sc-if>
-      <sc-for list="{{shortlistGroups}}" as="g" hint-placeholder-count="3">
-        <div style="display:flex;align-items:center;gap:8px;margin:6px 0 10px"><span style="width:8px;height:8px;border-radius:50%;background:{{g.color}}"></span><span style="font:700 12px Montserrat,sans-serif;color:{{g.color}}">{{g.label}}</span><span style="font:700 10px Inter,sans-serif;color:#6B6285;background:#F5F2F9;padding:2px 8px;border-radius:20px">{{g.count}}</span></div>
-        <sc-for list="{{g.items}}" as="sl" hint-placeholder-count="2">
-          <div style="border:1px solid #F0ECF6;border-radius:12px;margin-bottom:10px;padding:12px">
-            <div style="display:flex;align-items:center;gap:12px">
-              <div onClick="{{sl.onOpen}}" style="cursor:pointer"><dc-import name="ScoreRing" score="{{sl.score}}" size="40" variant="{{scoreStyle}}" hint-size="40px,40px"></dc-import></div>
-              <div onClick="{{sl.onOpen}}" style="flex:1;min-width:0;cursor:pointer"><div style="font:600 13px Inter,sans-serif;color:#1E1145">{{sl.firm}}</div><div style="font:500 11px Inter,sans-serif;color:#A99FBF">{{sl.xr}} · {{sl.quadLabel}}</div></div>
-              <div onClick="{{sl.onRemove}}" style="cursor:pointer;font:600 11px Inter,sans-serif;color:#DC2626;padding:5px 9px;border:1px solid #F3D3D3;border-radius:8px" style-hover="background:#FDECEC">Remove</div>
-            </div>
-            <div style="display:flex;gap:6px;margin-top:10px">
-              <div onClick="{{sl.setHigh}}" style="{{sl.priHigh}}">High</div>
-              <div onClick="{{sl.setMed}}" style="{{sl.priMed}}">Medium</div>
-              <div onClick="{{sl.setLow}}" style="{{sl.priLow}}">Low</div>
-            </div>
+<!-- add-to-shortlist popup (Amazon-wishlist style) -->
+<sc-if value="{{slAddOpen}}" hint-placeholder-val="{{false}}">
+  <div onClick="{{closeSlAdd}}" style="position:fixed;inset:0;background:rgba(30,17,69,.44);z-index:120;animation:fadeIn .18s ease both;display:flex;align-items:center;justify-content:center">
+    <div onClick="{{stop}}" style="width:420px;max-width:92vw;background:#fff;border-radius:18px;box-shadow:0 30px 70px -20px rgba(30,17,69,.55);animation:pop .18s ease both;overflow:hidden">
+      <div style="padding:20px 22px 14px;border-bottom:1px solid #F0ECF6;display:flex;align-items:flex-start;justify-content:space-between">
+        <div><div style="font:800 16px Montserrat,sans-serif;color:#1E1145">{{slAddTitle}}</div><div style="font:500 11.5px Inter,sans-serif;color:#8A7FA8;margin-top:3px">Pick a category — tap to add.</div></div>
+        <div onClick="{{closeSlAdd}}" style="cursor:pointer;font-size:17px;color:#8A7FA8">✕</div>
+      </div>
+      <div style="padding:14px 18px;max-height:44vh;overflow:auto">
+        <div style="font:700 10px Inter,sans-serif;letter-spacing:.6px;color:#8A7FA8;text-transform:uppercase;margin-bottom:9px">Select category</div>
+        <sc-for list="{{slAddCats}}" as="c" hint-placeholder-count="3">
+          <div onClick="{{c.onClick}}" style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border:1px solid #ECE7F1;border-radius:11px;margin-bottom:8px;cursor:pointer;transition:all .13s" style-hover="border-color:var(--acc);background:#F6F2FE">
+            <span style="display:flex;align-items:center;gap:10px;font:600 13px Inter,sans-serif;color:#2D2350"><span style="width:16px;height:16px;border-radius:50%;border:2px solid #C9BEE6"></span>{{c.name}}</span>
+            <span style="font:700 11px Inter,sans-serif;color:#6B6285;background:#F5F2F9;padding:2px 9px;border-radius:20px">{{c.count}}</span>
           </div>
         </sc-for>
-      </sc-for>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px dashed #E4DEEF">
+          <div style="font:700 10px Inter,sans-serif;letter-spacing:.6px;color:var(--acc);text-transform:uppercase;margin-bottom:8px">+ Create new category</div>
+          <div style="display:flex;gap:8px">
+            <input value="{{slNewCat}}" onInput="{{onSlNewCat}}" placeholder="e.g. Top Brokers" style="flex:1;height:40px;padding:0 12px;border:1px solid #ECE7F1;border-radius:10px;font:500 13px Inter,sans-serif;color:#1E1145;background:#FBFAFE">
+            <div onClick="{{slCreateCatAndAdd}}" style="display:flex;align-items:center;padding:0 16px;border-radius:10px;cursor:pointer;font:700 12.5px Montserrat,sans-serif;color:#fff;background:linear-gradient(135deg,var(--acc),var(--acc2))">Create &amp; add</div>
+          </div>
+        </div>
+      </div>
+      <div style="padding:12px 18px;border-top:1px solid #F0ECF6;display:flex;justify-content:flex-end">
+        <div onClick="{{closeSlAdd}}" style="padding:9px 18px;border-radius:10px;cursor:pointer;font:600 12.5px Inter,sans-serif;color:#6B6285;border:1px solid #ECE7F1">Cancel</div>
+      </div>
     </div>
-    <div style="padding:16px 20px;border-top:1px solid #ECE7F1"><button onClick="{{exportShortlist}}" style="width:100%;height:46px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;font:700 13px Montserrat,sans-serif;cursor:pointer;transition:transform .12s" style-active="transform:scale(.985)">↓ Export shortlist</button></div>
   </div>
 </sc-if>
 
@@ -1217,9 +1355,12 @@ class Component extends DCLogic {
     advanced: false,
     selectedXR: 'XR33921',
     popoverXR: null,
-    shortlist: ['XR33921'],
-    shortlistPriority: { XR33921: 'high' },
-    shortlistOpen: false,
+    slAdd: null,           // add-to-shortlist popup: {xr,firm} | {bulk:[xrs]}
+    slNewCat: '',          // create-category input (in popup / manage)
+    slManage: false,       // category manage mode on the board
+    slCollapsed: {},       // { catId: true } collapsed sections
+    slLogOpen: null,       // xr whose timeline is expanded
+    slFilter: { status: 'all', cat: 'all', city: 'all', assigned: 'all', verified: false, sort: 'updated' },
     hoverDot: null,
     bellOpen: false,
     searchQuery: '',
@@ -1289,6 +1430,32 @@ class Component extends DCLogic {
     draft:     { label:'Draft',     color:'#D97706', bg:'#FEF0E1' },
     completed: { label:'Completed', color:'#5B21B6', bg:'#F1EDFA' },
     inactive:  { label:'Inactive',  color:'#7A8091', bg:'#EEF0F3' },
+  };
+  SL_STATUS = [
+    { k:'new',           label:'New',               c:'#6B6285', bg:'#F1EEF7' },
+    { k:'contacted',     label:'Contacted',         c:'#2A6FDB', bg:'#EAF1FC' },
+    { k:'meeting_sched', label:'Meeting Scheduled', c:'#7C3AED', bg:'#F1EDFA' },
+    { k:'meeting_done',  label:'Meeting Done',      c:'#8B5CF6', bg:'#F1EDFA' },
+    { k:'proposal',      label:'Proposal Shared',   c:'#0E7490', bg:'#E0F2F5' },
+    { k:'negotiation',   label:'Negotiation',       c:'#D97706', bg:'#FEF0E1' },
+    { k:'tieup',         label:'Tie-up Done',       c:'#1E8E5A', bg:'#E4F3EC' },
+    { k:'rejected',      label:'Rejected',          c:'#DC2626', bg:'#FDECEC' },
+  ];
+  slUsers = ['Anjali J', 'Rohit M', 'Neha K'];
+  slSeq = 400;  // prototype id counter (no Date.now)
+  // Per-launch shortlist store: { [launchId]: { cats:[{id,name}], items:{ [xr]:{cat,status,assigned,added,log:[{d,t}]} } } }
+  sl = {
+    'LX-2026-0142': {
+      cats: [ {id:'c1',name:'High Priority'}, {id:'c2',name:'Medium Priority'}, {id:'c3',name:'Low Priority'}, {id:'c4',name:'Top Brokers'} ],
+      items: {
+        XR33921:  { cat:'c1', status:'tieup',        assigned:'Anjali J', added:'12 Jul', log:[{d:'12 Jul',t:'Added to High Priority'},{d:'14 Jul',t:'Contacted'},{d:'16 Jul',t:'Meeting Scheduled'},{d:'18 Jul',t:'Meeting Done'},{d:'20 Jul',t:'Tie-up Done'}] },
+        XR022153: { cat:'c1', status:'meeting_done',  assigned:'Anjali J', added:'12 Jul', log:[{d:'12 Jul',t:'Added to High Priority'},{d:'15 Jul',t:'Contacted'},{d:'19 Jul',t:'Meeting Done'}] },
+        XR005158: { cat:'c1', status:'contacted',     assigned:'Rohit M',  added:'13 Jul', log:[{d:'13 Jul',t:'Added to High Priority'},{d:'17 Jul',t:'Contacted'}] },
+        XR33907:  { cat:'c2', status:'proposal',      assigned:'Neha K',   added:'13 Jul', log:[{d:'13 Jul',t:'Added to Medium Priority'},{d:'16 Jul',t:'Contacted'},{d:'18 Jul',t:'Proposal Shared'}] },
+        XR022413: { cat:'c2', status:'new',           assigned:'Anjali J', added:'14 Jul', log:[{d:'14 Jul',t:'Added to Medium Priority'}] },
+        XR018842: { cat:'c3', status:'contacted',     assigned:'Rohit M',  added:'14 Jul', log:[{d:'14 Jul',t:'Added to Low Priority'},{d:'19 Jul',t:'Contacted'}] },
+      },
+    },
   };
   pinPool = ['400095', '400064', '400066', '400097', '400103'];
   vdnbMap = { XR33921:22, XR022153:18, XR005158:21, XR33907:22, XR010233:20, XR029001:21, XR022413:27, XR000009:28, XR018842:30, XR041220:32 };
@@ -1513,22 +1680,87 @@ class Component extends DCLogic {
 
   openProfile(xr) {
     const st = this.state;
-    this.setState({ selectedXR: xr, profileFrom: st.screen === 'profile' ? st.profileFrom : st.screen, screen: 'profile', popoverXR: null, bellOpen: false, shortlistOpen: false, searchQuery: '' });
+    this.setState({ selectedXR: xr, profileFrom: st.screen === 'profile' ? st.profileFrom : st.screen, screen: 'profile', popoverXR: null, bellOpen: false, slAdd: null, searchQuery: '' });
   }
-  toggleShort(xr, firm) {
-    const has = this.state.shortlist.includes(xr);
-    const pri = { ...this.state.shortlistPriority };
-    if (has) delete pri[xr]; else if (!pri[xr]) pri[xr] = 'medium';
-    this.setState({ shortlist: has ? this.state.shortlist.filter(x => x !== xr) : [...this.state.shortlist, xr], shortlistPriority: pri });
-    this.showToast(has ? (firm + ' removed from shortlist') : (firm + ' added to shortlist'));
-  }
-  setShortlistPriority(xr, level) { this.setState({ shortlistPriority: { ...this.state.shortlistPriority, [xr]: level } }); }
   tieUp(xr, firm) { this.showToast('Tie-up request sent to ' + firm); }
   openBulk(key) { const xrs = this.cpData.filter(c => this.matchCriteria(c) && c.quad === key).map(c => c.xr); this.setState({ bulkOpen: { title: this.quadMeta[key].label, xrs }, bulkSel: [] }); }
   openBulkProject(project, matched) { const xrs = this.cpData.slice().sort((a, b) => this.dynScore(b) - this.dynScore(a)).slice(0, matched).map(c => c.xr); this.setState({ bulkOpen: { title: project + ' — active CPs', xrs }, bulkSel: [] }); }
   closeBulk() { this.setState({ bulkOpen: null, bulkSel: [] }); }
   toggleBulk(xr) { const b = this.state.bulkSel; this.setState({ bulkSel: b.includes(xr) ? b.filter(x => x !== xr) : [...b, xr] }); }
-  addBulkToShortlist() { const add = this.state.bulkSel.filter(x => !this.state.shortlist.includes(x)); const pri = { ...this.state.shortlistPriority }; add.forEach(x => { if (!pri[x]) pri[x] = 'medium'; }); this.setState({ shortlist: [...this.state.shortlist, ...add], shortlistPriority: pri, bulkOpen: null, bulkSel: [] }); this.showToast(add.length + ' CP' + (add.length === 1 ? '' : 's') + ' added to shortlist'); }
+
+  // ---------- Shortlist workflow (per-launch categories + status tracking) ----------
+  slFor(id) {
+    id = id || this.state.currentLaunchId;
+    if (!this.sl[id]) this.sl[id] = { cats: [{ id: 'c1', name: 'High Priority' }, { id: 'c2', name: 'Medium Priority' }, { id: 'c3', name: 'Low Priority' }], items: {} };
+    return this.sl[id];
+  }
+  slHas(xr) { return !!this.slFor().items[xr]; }
+  slLabel(k) { return (this.SL_STATUS.find(s => s.k === k) || this.SL_STATUS[0]).label; }
+  slToday() { this.slSeq += 1; const days = ['21 Jul', '22 Jul', '23 Jul', '24 Jul', '25 Jul', '26 Jul']; return days[this.slSeq % days.length]; }
+  slCounts(id) {
+    const st = this.sl[id]; const items = st ? Object.values(st.items) : [];
+    const done = ['meeting_done', 'proposal', 'negotiation', 'tieup'];
+    const lx = this.launches.find(l => l.id === id);
+    return {
+      matches: lx ? lx.matches : 0,
+      shortlisted: items.length,
+      contacted: items.filter(i => i.status !== 'new' && i.status !== 'rejected').length,
+      meetings: items.filter(i => done.includes(i.status)).length,
+      tieup: items.filter(i => i.status === 'tieup').length,
+      final: items.filter(i => i.status === 'tieup').length,
+    };
+  }
+  openSlAdd(xr, firm) { this.setState({ slAdd: { xr, firm }, slNewCat: '' }); }
+  openSlAddBulk(xrs) { this.setState({ slAdd: { bulk: xrs }, slNewCat: '' }); }
+  closeSlAdd() { this.setState({ slAdd: null, slNewCat: '' }); }
+  _slAddItem(store, xr, catId, catName) {
+    store.items[xr] = { cat: catId, status: 'new', assigned: this.slUsers[0], added: this.slToday(), log: [{ d: this.slToday(), t: 'Added to ' + catName }] };
+  }
+  slAddToCat(catId) {
+    const st = this.slFor(); const cat = st.cats.find(c => c.id === catId); if (!cat) return;
+    const a = this.state.slAdd; if (!a) return;
+    const xrs = a.bulk || [a.xr];
+    xrs.forEach(xr => { if (!st.items[xr]) this._slAddItem(st, xr, catId, cat.name); });
+    this.setState({ slAdd: null, slNewCat: '' });
+    this.showToast((a.bulk ? xrs.length + ' CPs' : (a.firm || 'CP')) + ' added to ' + cat.name);
+  }
+  slCreateCatAndAdd() {
+    const name = this.state.slNewCat.trim(); if (!name) return;
+    const st = this.slFor(); this.slSeq += 1; const id = 'c' + this.slSeq; st.cats.push({ id, name });
+    this.slAddToCat(id);
+  }
+  slCreateCat() {
+    const name = this.state.slNewCat.trim(); if (!name) return;
+    const st = this.slFor(); this.slSeq += 1; st.cats.push({ id: 'c' + this.slSeq, name });
+    this.setState({ slNewCat: '' }); this.showToast('Category created · ' + name);
+  }
+  slRenameCat(id, name) { const st = this.slFor(); st.cats = st.cats.map(c => c.id === id ? { ...c, name } : c); this.forceUpdate(); }
+  slDeleteCat(id) {
+    const st = this.slFor(); if (st.cats.length <= 1) { this.showToast('Keep at least one category'); return; }
+    const fallback = st.cats.find(c => c.id !== id).id;
+    Object.keys(st.items).forEach(xr => { if (st.items[xr].cat === id) st.items[xr] = { ...st.items[xr], cat: fallback }; });
+    st.cats = st.cats.filter(c => c.id !== id); this.forceUpdate(); this.showToast('Category deleted');
+  }
+  slMoveCat(id, dir) {
+    const st = this.slFor(); const i = st.cats.findIndex(c => c.id === id); const j = i + dir;
+    if (i < 0 || j < 0 || j >= st.cats.length) return;
+    const a = st.cats.slice(); const t = a[i]; a[i] = a[j]; a[j] = t; st.cats = a; this.forceUpdate();
+  }
+  slSetStatus(xr, k) {
+    const st = this.slFor(); const it = st.items[xr]; if (!it) return;
+    if (it.status === k) return;
+    st.items[xr] = { ...it, status: k, log: [...it.log, { d: this.slToday(), t: this.slLabel(k) }] };
+    this.forceUpdate(); this.showToast('Status → ' + this.slLabel(k));
+  }
+  slMoveItem(xr, catId) {
+    const st = this.slFor(); const it = st.items[xr]; const cat = st.cats.find(c => c.id === catId); if (!it || !cat) return;
+    st.items[xr] = { ...it, cat: catId, log: [...it.log, { d: this.slToday(), t: 'Moved to ' + cat.name }] };
+    this.forceUpdate(); this.showToast('Moved to ' + cat.name);
+  }
+  slRemove(xr, firm) { const st = this.slFor(); const c = { ...st.items }; delete c[xr]; st.items = c; this.forceUpdate(); this.showToast((firm || 'CP') + ' removed from shortlist'); }
+  slToggleCat(id) { this.setState({ slCollapsed: { ...this.state.slCollapsed, [id]: !this.state.slCollapsed[id] } }); }
+  slToggleLog(xr) { this.setState({ slLogOpen: this.state.slLogOpen === xr ? null : xr }); }
+  setSlFilter(k, v) { this.setState({ slFilter: { ...this.state.slFilter, [k]: v } }); }
   reraDate(cp) { return cp.rera === 'ok' ? (cp.reraNum.split('valid to ')[1] || 'current') : null; }
   makeBreakdown(cp) { const sw = this.state.scoreWeights; return this.labels.map((l, i) => { const frac = cp.got[i] / this.weights[i]; return { label: l, sub: this.subs[i], weight: sw[i], got: Math.round(frac * sw[i]), fill: Math.round(frac * 100) + '%' }; }); }
   dynScore(cp) { const sw = this.state.scoreWeights; return Math.round(sw.reduce((a, w, i) => a + (cp.got[i] / this.weights[i]) * w, 0)); }
@@ -1661,7 +1893,7 @@ class Component extends DCLogic {
     if (cp.rera === 'ok') chips.push({ text:'RERA ✓', bg:'#E4F3EC', color:'#1E8E5A' });
     else chips.push({ text:'RERA expiring 30d', bg:'#FEF0E1', color:'#D97706' });
     chips.push(cp.gst ? { text:'GST ✓', bg:'#E4F3EC', color:'#1E8E5A' } : { text:'GST pending', bg:'#FEF0E1', color:'#D97706' });
-    const inSl = this.state.shortlist.includes(cp.xr);
+    const inSl = this.slHas(cp.xr);
     const open = this.state.popoverXR === cp.xr;
     return {
       ...cp,
@@ -1681,7 +1913,7 @@ class Component extends DCLogic {
       shortStyle: 'display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:8px;cursor:pointer;font:600 11.5px Inter,sans-serif;transition:transform .12s;border:1px solid ' + (inSl ? '#1E8E5A' : '#D9CEF3') + ';background:' + (inSl ? '#E4F3EC' : '#fff') + ';color:' + (inSl ? '#1E8E5A' : '#5B21B6'),
       onRow: () => this.openProfile(cp.xr),
       onScore: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.setState({ popoverXR: this.state.popoverXR === cp.xr ? null : cp.xr }); },
-      onToggleShort: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.toggleShort(cp.xr, cp.firm); },
+      onToggleShort: (e) => { if (e && e.stopPropagation) e.stopPropagation(); if (this.slHas(cp.xr)) this.slRemove(cp.xr, cp.firm); else this.openSlAdd(cp.xr, cp.firm); },
     };
   }
   buildSel() {
@@ -1747,10 +1979,13 @@ class Component extends DCLogic {
       if (l.status === 'draft') acts.push(actBtn('Activate', '#1E8E5A', () => this.setLaunchStatus(l.id, 'active')));
       if (l.status === 'active') { acts.push(actBtn('Complete', '#5B21B6', () => this.setLaunchStatus(l.id, 'completed'))); acts.push(actBtn('Archive', '#7A8091', () => this.setLaunchStatus(l.id, 'inactive'))); }
       if (l.status === 'completed' || l.status === 'inactive') acts.push(actBtn('Reopen', '#D97706', () => this.setLaunchStatus(l.id, 'active')));
+      const c = this.slCounts(l.id);
       return {
         id: l.id, name: l.name, city: l.city, config: l.config, price: l.price, dev: l.dev, created: l.created,
         stLabel: meta.label, stColor: meta.color, stBg: meta.bg, isCurrent: isCur,
-        subMetric: l.status === 'completed' && l.soldPct != null ? (l.soldPct + '% sold') : (l.matches + ' matches · ' + l.shortlist + ' shortlisted'),
+        subMetric: l.status === 'completed' && l.soldPct != null ? (l.soldPct + '% sold') : (l.matches + ' matches · ' + c.shortlisted + ' shortlisted · ' + c.contacted + ' contacted · ' + c.final + ' finalized'),
+        slBadge: '📌 ' + c.shortlisted + ' · 🤝 ' + c.final,
+        openSl: () => this.setState({ currentLaunchId: l.id, screen: 'shortlist' }),
         rowStyle: 'display:grid;grid-template-columns:2.4fr 1.6fr 1fr .9fr 1.4fr;gap:12px;align-items:center;padding:14px 20px;border-bottom:1px solid #F4F1FA;transition:background .12s;' + (isCur ? 'background:#FAF8FD;' : '') + 'animation:fadeUp .34s ease both;animation-delay:' + (i * 35) + 'ms',
         onOpen: () => this.openLaunch(l.id),
         actions: acts,
@@ -1820,7 +2055,7 @@ class Component extends DCLogic {
     }).filter(g => g.count > 0);
     // CR-12: bulk popup rows (works for quad categories AND competitor projects)
     const bulkRows = s.bulkOpen ? s.bulkOpen.xrs.map(xr => this.cpData.find(c => c.xr === xr)).filter(Boolean).map(cp => {
-      const m2 = this.quadMeta[cp.quad]; const on = s.bulkSel.includes(cp.xr); const inSl = s.shortlist.includes(cp.xr);
+      const m2 = this.quadMeta[cp.quad]; const on = s.bulkSel.includes(cp.xr); const inSl = this.slHas(cp.xr);
       return { xr: cp.xr, firm: cp.firm, score: this.dynScore(cp), catLabel: m2.label, catColor: m2.color, catBg: m2.bg,
         status: inSl ? 'Shortlisted' : (cp.rera === 'ok' ? 'Verified' : 'RERA expiring'),
         checked: on, onToggle: () => this.toggleBulk(cp.xr),
@@ -1999,22 +2234,69 @@ class Component extends DCLogic {
     const q = s.searchQuery.trim().toLowerCase();
     const searchResults = q ? this.cpData.filter(c => c.firm.toLowerCase().includes(q) || c.xr.toLowerCase().includes(q)).slice(0, 6).map(c => ({ firm: c.firm, xr: c.xr, score: c.score, onClick: () => this.openProfile(c.xr) })) : [];
 
-    // shortlist
-    const priMeta = { high: { label: 'High priority', color: '#DC2626', bg: '#FDECEC' }, medium: { label: 'Medium priority', color: '#D97706', bg: '#FEF0E1' }, low: { label: 'Low priority', color: '#1E8E5A', bg: '#E4F3EC' } };
-    const priChip = (xr, level, on) => 'flex:1;text-align:center;padding:5px 0;border-radius:7px;cursor:pointer;font:700 10px Inter,sans-serif;text-transform:uppercase;letter-spacing:.4px;transition:all .12s;border:1px solid ' + (on ? priMeta[level].color : '#ECE7F1') + ';background:' + (on ? priMeta[level].bg : '#fff') + ';color:' + (on ? priMeta[level].color : '#A99FBF');
-    const mkShort = (c) => { const lvl = s.shortlistPriority[c.xr] || 'medium'; return {
-      firm: c.firm, xr: c.xr, score: this.dynScore(c), quadLabel: this.quadMeta[c.quad].label, level: lvl,
-      onOpen: () => this.openProfile(c.xr), onRemove: () => this.toggleShort(c.xr, c.firm),
-      priHigh: priChip(c.xr, 'high', lvl === 'high'), priMed: priChip(c.xr, 'medium', lvl === 'medium'), priLow: priChip(c.xr, 'low', lvl === 'low'),
-      setHigh: () => this.setShortlistPriority(c.xr, 'high'), setMed: () => this.setShortlistPriority(c.xr, 'medium'), setLow: () => this.setShortlistPriority(c.xr, 'low'),
-    }; };
-    const slCps = s.shortlist.map(xr => this.cpData.find(c => c.xr === xr)).filter(Boolean);
-    const shortlistItems = slCps.map(mkShort);
-    const shortlistGroups = ['high', 'medium', 'low'].map(level => ({
-      level, label: priMeta[level].label, color: priMeta[level].color, bg: priMeta[level].bg,
-      items: slCps.filter(c => (s.shortlistPriority[c.xr] || 'medium') === level).map(mkShort),
-      count: slCps.filter(c => (s.shortlistPriority[c.xr] || 'medium') === level).length,
-    })).filter(g => g.count > 0);
+    // ---- shortlist workflow board (per current launch) ----
+    const SLS = this.SL_STATUS;
+    const slStMeta = (k) => SLS.find(x => x.k === k) || SLS[0];
+    const slStore = this.slFor(s.currentLaunchId);
+    const slAll = Object.keys(slStore.items).map(xr => ({ cp: this.cpData.find(c => c.xr === xr), it: slStore.items[xr] })).filter(o => o.cp);
+    const F = s.slFilter;
+    const slPass = (o) => {
+      if (F.status !== 'all' && o.it.status !== F.status) return false;
+      if (F.cat !== 'all' && o.it.cat !== F.cat) return false;
+      if (F.city !== 'all' && o.cp.markets !== F.city) return false;
+      if (F.assigned !== 'all' && o.it.assigned !== F.assigned) return false;
+      if (F.verified && !this.isVerified(o.cp)) return false;
+      return true;
+    };
+    const slSortFn = (a, b) => (F.sort === 'fit' ? this.dynScore(b.cp) - this.dynScore(a.cp) : (b.it.log.length - a.it.log.length));
+    const slStatusSelOpts = SLS.map(x => ({ v: x.k, l: x.label }));
+    const mkSlCard = (o) => {
+      const cp = o.cp, it = o.it, m = slStMeta(it.status);
+      return {
+        xr: cp.xr, firm: cp.firm, city: cp.markets, score: this.dynScore(cp), verified: this.isVerified(cp),
+        statusKey: it.status, statusLabel: m.label, statusColor: m.c, statusBg: m.bg,
+        assigned: it.assigned, added: it.added,
+        onStatus: (e) => this.slSetStatus(cp.xr, e.target.value),
+        moveOpts: slStore.cats.map(c => ({ v: c.id, l: c.name })),
+        moveVal: it.cat,
+        onMove: (e) => this.slMoveItem(cp.xr, e.target.value),
+        onContacted: () => this.slSetStatus(cp.xr, 'contacted'),
+        onMeetSched: () => this.slSetStatus(cp.xr, 'meeting_sched'),
+        onMeetDone: () => this.slSetStatus(cp.xr, 'meeting_done'),
+        onProposal: () => this.slSetStatus(cp.xr, 'proposal'),
+        onTieup: () => this.slSetStatus(cp.xr, 'tieup'),
+        onRemove: () => this.slRemove(cp.xr, cp.firm),
+        onOpenProfile: () => this.openProfile(cp.xr),
+        logOpen: s.slLogOpen === cp.xr, log: it.log, logLabel: (s.slLogOpen === cp.xr ? 'Hide timeline' : 'Timeline (' + it.log.length + ')'),
+        onToggleLog: () => this.slToggleLog(cp.xr),
+      };
+    };
+    const slFiltered = slAll.filter(slPass);
+    const slBoard = slStore.cats.map((cat) => {
+      const cards = slFiltered.filter(o => o.it.cat === cat.id).sort(slSortFn).map(mkSlCard);
+      const collapsed = !!s.slCollapsed[cat.id];
+      return {
+        id: cat.id, name: cat.name,
+        count: slAll.filter(o => o.it.cat === cat.id).length,
+        collapsed, open: !collapsed, notManage: !s.slManage, caret: collapsed ? '▸' : '▾', cards, empty: cards.length === 0,
+        onToggle: () => this.slToggleCat(cat.id),
+        onRename: (e) => this.slRenameCat(cat.id, e.target.value),
+        onDelete: () => this.slDeleteCat(cat.id),
+        onUp: () => this.slMoveCat(cat.id, -1), onDown: () => this.slMoveCat(cat.id, 1),
+      };
+    });
+    const slFinal = slAll.filter(o => o.it.status === 'tieup').map(mkSlCard);
+    const slSummary = this.slCounts(s.currentLaunchId);
+    const slStatusChips = [{ k: 'all', label: 'All', count: slAll.length }].concat(SLS.map(x => ({ k: x.k, label: x.label, count: slAll.filter(o => o.it.status === x.k).length }))).map(c => ({
+      label: c.label + ' (' + c.count + ')', on: F.status === c.k, onClick: () => this.setSlFilter('status', c.k),
+      style: 'padding:7px 13px;border-radius:9px;cursor:pointer;font:600 12px Inter,sans-serif;white-space:nowrap;border:1px solid ' + (F.status === c.k ? 'var(--acc)' : '#ECE7F1') + ';background:' + (F.status === c.k ? 'var(--acc)' : '#fff') + ';color:' + (F.status === c.k ? '#fff' : '#4B4568'),
+    }));
+    const slCatFilterOpts = [{ v: 'all', l: 'All categories' }].concat(slStore.cats.map(c => ({ v: c.id, l: c.name })));
+    const slCityFilterOpts = [{ v: 'all', l: 'All cities' }].concat([...new Set(slAll.map(o => o.cp.markets))].map(c => ({ v: c, l: c })));
+    const slAssignedFilterOpts = [{ v: 'all', l: 'All users' }].concat(this.slUsers.map(u => ({ v: u, l: u })));
+    const slAddOpen = !!s.slAdd;
+    const slAddTitle = (s.slAdd && s.slAdd.bulk) ? ('Add ' + s.slAdd.bulk.length + ' CPs to shortlist') : ('Add ' + ((s.slAdd && s.slAdd.firm) || 'CP') + ' to shortlist');
+    const slAddCats = slStore.cats.map(c => ({ name: c.name, count: slAll.filter(o => o.it.cat === c.id).length, onClick: () => this.slAddToCat(c.id) }));
 
     const alerts = [
       { text: 'BR Real Estate — RERA expiring in 30 days', time: 'Today · 09:14', dot: '#D97706', onClick: () => this.openProfile('XR022413') },
@@ -2023,13 +2305,13 @@ class Component extends DCLogic {
     ];
 
     const sel = this.buildSel();
-    const inShortlist = s.shortlist.includes(sel.xr);
+    const inShortlist = this.slHas(sel.xr);
     const backMap = { match: '← Back to matches', quadrant: '← Back to quadrant', micro: '← Back to Micro-Market', dashboard: '← Back to dashboard' };
 
     return {
       isLogin: screen === 'login', isApp: screen !== 'login',
       onDashboard: screen === 'dashboard', onLaunches: screen === 'launches', onMatch: screen === 'match', onProfile: screen === 'profile', onQuadrant: screen === 'quadrant', onMicro: screen === 'micro',
-      onRefresh: screen === 'refresh', onCompliance: screen === 'compliance',
+      onRefresh: screen === 'refresh', onCompliance: screen === 'compliance', onShortlist: screen === 'shortlist',
       isLoading: screen === 'match' && s.searchState === 'loading',
       showResults: screen === 'match' && s.searchState === 'results',
       findBtnLabel: (screen === 'match' && s.searchState === 'loading') ? 'Scoring CPs…' : 'Find Matching CPs',
@@ -2053,7 +2335,7 @@ class Component extends DCLogic {
       ].map((p, i) => { const cx = parseFloat(p.x), cy = parseFloat(p.y); const cpx = (60 + cx) / 2 + (cy - 54) * 0.16, cpy = (54 + cy) / 2 - (cx - 60) * 0.16; return { ...p, cx, cy, path: 'M60 54 Q ' + cpx.toFixed(1) + ' ' + cpy.toFixed(1) + ' ' + cx + ' ' + cy, delay: (i * 120 + 500) + 'ms', floatDelay: (i * 0.45) + 's' }; }),
       mapRoads: ['M-5 22 C 20 30 34 12 58 24 S 96 20 108 32','M-5 58 C 24 48 40 66 66 56 S 98 62 108 52','M12 -5 C 20 24 6 44 22 66 S 16 96 26 108','M52 -5 C 46 22 62 40 54 64 S 66 92 58 108','M-5 84 C 30 78 52 92 80 82 S 104 88 108 80','M82 -5 C 78 26 92 44 84 70 S 90 96 86 108'],
       loginParticles: [12,27,41,58,73,88,20,36,52,66,80,9,46,63].map((lx, i) => ({ lx: lx + '%', size: (2 + (i % 3)) + 'px', dur: (7 + (i % 5) * 1.3) + 's', delay: (i * 0.7) + 's', op: 0.3 + (i % 4) * 0.14 })),
-      logout: () => this.setState({ screen: 'login', bellOpen: false, shortlistOpen: false, searchQuery: '', popoverXR: null }),
+      logout: () => this.setState({ screen: 'login', bellOpen: false, slAdd: null, searchQuery: '', popoverXR: null }),
       goDashboard: () => this.setState({ screen: 'dashboard' }),
       goLaunches: () => this.setState({ screen: 'launches' }),
       goMatch: () => this.setState({ screen: 'match' }),
@@ -2064,7 +2346,8 @@ class Component extends DCLogic {
       backTo: () => this.setState({ screen: s.profileFrom }),
       backLabel: backMap[s.profileFrom] || '← Back',
 
-      navDash: nav('dashboard'), navLaunches: nav('launches'), navRefresh: nav('refresh'), navMatch: nav('match'), navQuad: nav('quadrant'), navMicro: nav('micro'),
+      navDash: nav('dashboard'), navLaunches: nav('launches'), navRefresh: nav('refresh'), navMatch: nav('match'), navQuad: nav('quadrant'), navMicro: nav('micro'), navShort: nav('shortlist'),
+      goShortlist: () => this.setState({ screen: 'shortlist' }),
       launchSummary, launchFilterChips, launchList, launchEmpty: launchList.length === 0,
       newLaunch: () => this.newLaunch(),
       launchDrawer: s.launchDrawer, lf: s.lf,
@@ -2162,16 +2445,40 @@ class Component extends DCLogic {
       showList: () => this.setState({ matchTab: 'list' }), showQuad: () => this.setState({ matchTab: 'quad' }),
       scoreParamSliders, scoreWeightTotal,
       bulkOpen: !!s.bulkOpen, bulkRows, bulkLabel: s.bulkOpen ? s.bulkOpen.title : '', bulkSelCount: s.bulkSel.length,
-      closeBulk: () => this.closeBulk(), addBulkToShortlist: () => this.addBulkToShortlist(),
+      closeBulk: () => this.closeBulk(), addBulkToShortlist: () => { const xrs = s.bulkSel.filter(x => !this.slHas(x)); this.setState({ bulkOpen: null }); this.openSlAddBulk(xrs); },
       summaryLine,
       stop: (e) => { if (e && e.stopPropagation) e.stopPropagation(); },
       scoreStyle: this.props.scoreStyle || 'Ring',
 
       sel,
-      shortlistCount: s.shortlist.length,
+      shortlistCount: slAll.length,
       shortlistBtnText: inShortlist ? '✓ In launch shortlist' : '+ Add to launch shortlist',
       shortlistBtnBg: inShortlist ? '#1E8E5A' : 'linear-gradient(135deg,var(--acc),var(--acc2))',
-      addShortlist: () => this.toggleShort(sel.xr, sel.firm),
+      addShortlist: () => { if (this.slHas(sel.xr)) this.slRemove(sel.xr, sel.firm); else this.openSlAdd(sel.xr, sel.firm); },
+      slBoard, slFinal, slFinalCount: slFinal.length, slBoardEmpty: slAll.length === 0, slSummary, slStatusChips,
+      slManage: s.slManage, slManageToggle: () => this.setState({ slManage: !this.state.slManage }),
+      slStatusSelOpts, slCatFilterOpts, slCityFilterOpts, slAssignedFilterOpts,
+      slFilterCat: F.cat, slFilterCity: F.city, slFilterAssigned: F.assigned, slFilterSort: F.sort, slFilterVerified: F.verified,
+      onSlFilterCat: (e) => this.setSlFilter('cat', e.target.value),
+      onSlFilterCity: (e) => this.setSlFilter('city', e.target.value),
+      onSlFilterAssigned: (e) => this.setSlFilter('assigned', e.target.value),
+      onSlFilterSort: (e) => this.setSlFilter('sort', e.target.value),
+      toggleSlVerified: () => this.setSlFilter('verified', !F.verified),
+      slNewCat: s.slNewCat, onSlNewCat: (e) => this.setState({ slNewCat: e.target.value }),
+      slCreateCat: () => this.slCreateCat(),
+      slAddOpen, slAddTitle, slAddCats,
+      slCreateCatAndAdd: () => this.slCreateCatAndAdd(),
+      closeSlAdd: () => this.closeSlAdd(),
+      goShortlistCur: () => this.setState({ screen: 'shortlist' }),
+      slHasFinal: slFinal.length > 0,
+      onSlFilterCity: (e) => this.setSlFilter('city', e.target.value),
+      catFilterNote: (F.status !== 'all' || F.verified || F.city !== 'all' || F.assigned !== 'all') ? ' for the current filters' : '',
+      slFilterSelStyle: 'height:38px;padding:0 11px;border:1px solid #ECE7F1;border-radius:10px;font:600 12px Inter,sans-serif;color:#3B3357;background:#fff;cursor:pointer',
+      slVerBorder: F.verified ? '#16A34A' : '#ECE7F1', slVerBg: F.verified ? '#E4F3EC' : '#fff', slVerColor: F.verified ? '#16A34A' : '#4B4568', slVerMark: F.verified ? '☑' : '☐',
+      slQaStyle: 'padding:6px 11px;border-radius:8px;cursor:pointer;font:600 11px Inter,sans-serif;color:#4B4568;border:1px solid #ECE7F1;background:#fff',
+      slQaTieStyle: 'padding:6px 11px;border-radius:8px;cursor:pointer;font:700 11px Inter,sans-serif;color:#fff;background:#1E8E5A;border:1px solid #1E8E5A',
+      slQaGhostStyle: 'padding:6px 11px;border-radius:8px;cursor:pointer;font:600 11px Inter,sans-serif;color:#5B4E80;background:#F5F2F9;border:1px solid #ECE7F1',
+      slQaRemoveStyle: 'padding:6px 11px;border-radius:8px;cursor:pointer;font:600 11px Inter,sans-serif;color:#DC2626;border:1px solid #F3D3D3;background:#fff',
       assignMgr: () => this.showToast('Assigned to Sourcing Manager — Rohit K.'),
       profileActBtn: 'padding:9px 16px;border-radius:10px;cursor:pointer;font:600 12.5px Inter,sans-serif;color:#4B4568;border:1px solid #ECE7F1;background:#fff;white-space:nowrap',
       profileCall: () => this.showToast('Calling ' + sel.firm + ' · ' + sel.phone),
@@ -2182,7 +2489,7 @@ class Component extends DCLogic {
       pfList, pfCount, quadCells, pfHasMore, pfToggleLabel, pfToggleIcon,
       pfToggle: () => this.setState({ pfOpen: !this.state.pfOpen }), helpItems,
       exportApproach: () => this.showToast('Shortlist exported · ' + pfCount + ' CPs (.csv)'),
-      exportShortlist: () => this.showToast('Shortlist exported · ' + s.shortlist.length + ' CPs (.csv)'),
+      exportShortlist: () => this.showToast('Shortlist exported · ' + slAll.length + ' CPs (.csv)'),
 
       micro, overlap, microKpis, catLegend, competitorList, competitorCount, competitorEmpty,
       viewList: () => this.showToast('List view — showing all 7 projects as a table'),
@@ -2196,10 +2503,7 @@ class Component extends DCLogic {
       toggleBell: () => this.setState({ bellOpen: !s.bellOpen }),
       alerts,
 
-      shortlistOpen: s.shortlistOpen,
-      openShortlistPanel: () => this.setState({ shortlistOpen: true }),
-      closeShortlist: () => this.setState({ shortlistOpen: false }),
-      shortlistItems, shortlistGroups, shortlistEmpty: s.shortlist.length === 0,
+      openShortlistPanel: () => this.setState({ screen: 'shortlist' }),
 
       complianceGroups: (() => {
         const list = s.complianceFilter === 'All' ? this.complianceAlerts : this.complianceAlerts.filter(a => a.cat === s.complianceFilter);
