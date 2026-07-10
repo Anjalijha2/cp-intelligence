@@ -1215,10 +1215,22 @@
   <div onClick="{{closeSlAdd}}" style="position:fixed;inset:0;background:rgba(30,17,69,.44);z-index:120;animation:fadeIn .18s ease both;display:flex;align-items:center;justify-content:center">
     <div onClick="{{stop}}" style="width:420px;max-width:92vw;background:#fff;border-radius:18px;box-shadow:0 30px 70px -20px rgba(30,17,69,.55);animation:pop .18s ease both;overflow:hidden">
       <div style="padding:20px 22px 14px;border-bottom:1px solid #F0ECF6;display:flex;align-items:flex-start;justify-content:space-between">
-        <div><div style="font:800 16px Montserrat,sans-serif;color:#1E1145">{{slAddTitle}}</div><div style="font:500 11.5px Inter,sans-serif;color:#8A7FA8;margin-top:3px">Pick a category — tap to add.</div></div>
+        <div><div style="font:800 16px Montserrat,sans-serif;color:#1E1145">{{slAddTitle}}</div><div style="font:500 11.5px Inter,sans-serif;color:#8A7FA8;margin-top:3px">Pick launches, then a category — tap to add.</div></div>
         <div onClick="{{closeSlAdd}}" style="cursor:pointer;font-size:17px;color:#8A7FA8">✕</div>
       </div>
-      <div style="padding:14px 18px;max-height:44vh;overflow:auto">
+      <div style="padding:14px 18px;max-height:52vh;overflow:auto">
+        <div style="font:700 10px Inter,sans-serif;letter-spacing:.6px;color:#8A7FA8;text-transform:uppercase;margin-bottom:9px">Add to launches</div>
+        <div data-sllaunch style="position:relative;margin-bottom:14px">
+          <div onClick="{{toggleSlLaunchDrop}}" style="display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border:1px solid #ECE7F1;border-radius:11px;cursor:pointer;background:#FBFAFE"><span style="font:600 13px Inter,sans-serif;color:#2D2350">{{slAddLaunchLabel}}</span><span style="color:#8A7FA8">▾</span></div>
+          <sc-if value="{{slLaunchDropOpen}}" hint-placeholder-val="{{false}}">
+            <div style="position:absolute;left:0;right:0;top:100%;margin-top:4px;z-index:10;background:#fff;border:1px solid #ECE7F1;border-radius:12px;box-shadow:0 18px 40px -16px rgba(30,17,69,.4);max-height:220px;overflow:auto">
+              <sc-for list="{{slAddLaunchOpts}}" as="lo" hint-placeholder-count="4">
+                <div onClick="{{lo.onToggle}}" style="display:flex;align-items:center;gap:10px;padding:10px 13px;cursor:pointer;border-bottom:1px solid #F4F1F8;font:600 12.5px Inter,sans-serif;color:#3B3357" style-hover="background:#F6F2FE"><span style="font-size:15px;color:var(--acc)">{{lo.mark}}</span><span style="flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{lo.name}}</span><sc-if value="{{lo.current}}" hint-placeholder-val="{{false}}"><span style="font:700 8.5px Inter,sans-serif;color:var(--acc);background:#F1EDFA;padding:2px 6px;border-radius:20px">CURRENT</span></sc-if></div>
+              </sc-for>
+            </div>
+          </sc-if>
+          <div style="font:500 11px Inter,sans-serif;color:#A99FBF;margin-top:6px">One CP can be shortlisted into several launches at once.</div>
+        </div>
         <div style="font:700 10px Inter,sans-serif;letter-spacing:.6px;color:#8A7FA8;text-transform:uppercase;margin-bottom:9px">Select category</div>
         <sc-for list="{{slAddCats}}" as="c" hint-placeholder-count="3">
           <div onClick="{{c.onClick}}" style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border:1px solid #ECE7F1;border-radius:11px;margin-bottom:8px;cursor:pointer;transition:all .13s" style-hover="border-color:var(--acc);background:#F6F2FE">
@@ -1356,6 +1368,8 @@ class Component extends DCLogic {
     selectedXR: 'XR33921',
     popoverXR: null,
     slAdd: null,           // add-to-shortlist popup: {xr,firm} | {bulk:[xrs]}
+    slAddLaunches: [],     // launches selected in the add popup (one CP → many launches)
+    slLaunchDropOpen: false,
     slNewCat: '',          // create-category input (in popup / manage)
     slManage: false,       // category manage mode on the board
     slCollapsed: {},       // { catId: true } collapsed sections
@@ -1566,6 +1580,7 @@ class Component extends DCLogic {
       if (this.state.sortOpen && t.closest && !t.closest('[data-sort]')) this.setState({ sortOpen: false });
       if (this.state.geoSearch && t.closest && !t.closest('[data-geo]')) this.setState({ geoSearch: '' });
       if (this.state.lfSuggest.length && t.closest && !t.closest('[data-lfaddr]')) this.setState({ lfSuggest: [] });
+      if (this.state.slLaunchDropOpen && t.closest && !t.closest('[data-sllaunch]')) this.setState({ slLaunchDropOpen: false });
     };
     document.addEventListener('mousedown', this._docClick);
   }
@@ -1710,24 +1725,36 @@ class Component extends DCLogic {
       final: items.filter(i => i.status === 'tieup').length,
     };
   }
-  openSlAdd(xr, firm) { this.setState({ slAdd: { xr, firm }, slNewCat: '' }); }
-  openSlAddBulk(xrs) { this.setState({ slAdd: { bulk: xrs }, slNewCat: '' }); }
-  closeSlAdd() { this.setState({ slAdd: null, slNewCat: '' }); }
+  openSlAdd(xr, firm) { this.setState({ slAdd: { xr, firm }, slAddLaunches: [this.state.currentLaunchId], slLaunchDropOpen: false, slNewCat: '' }); }
+  openSlAddBulk(xrs) { this.setState({ slAdd: { bulk: xrs }, slAddLaunches: [this.state.currentLaunchId], slLaunchDropOpen: false, slNewCat: '' }); }
+  closeSlAdd() { this.setState({ slAdd: null, slLaunchDropOpen: false, slNewCat: '' }); }
+  toggleSlAddLaunch(id) { const a = this.state.slAddLaunches; this.setState({ slAddLaunches: a.includes(id) ? a.filter(x => x !== id) : [...a, id] }); }
+  toggleSlLaunchDrop() { this.setState({ slLaunchDropOpen: !this.state.slLaunchDropOpen }); }
   _slAddItem(store, xr, catId, catName) {
     store.items[xr] = { cat: catId, status: 'new', assigned: this.slUsers[0], added: this.slToday(), log: [{ d: this.slToday(), t: 'Added to ' + catName }] };
   }
-  slAddToCat(catId) {
-    const st = this.slFor(); const cat = st.cats.find(c => c.id === catId); if (!cat) return;
+  _ensureCatByName(store, name) {
+    const found = store.cats.find(c => c.name.toLowerCase() === name.toLowerCase());
+    if (found) return found.id;
+    this.slSeq += 1; const id = 'c' + this.slSeq; store.cats.push({ id, name }); return id;
+  }
+  _slAddToLaunches(name) {
     const a = this.state.slAdd; if (!a) return;
+    const launches = this.state.slAddLaunches;
+    if (!launches.length) { this.showToast('Select at least one launch'); return; }
     const xrs = a.bulk || [a.xr];
-    xrs.forEach(xr => { if (!st.items[xr]) this._slAddItem(st, xr, catId, cat.name); });
-    this.setState({ slAdd: null, slNewCat: '' });
-    this.showToast((a.bulk ? xrs.length + ' CPs' : (a.firm || 'CP')) + ' added to ' + cat.name);
+    launches.forEach(lid => { const store = this.slFor(lid); const cid = this._ensureCatByName(store, name); xrs.forEach(xr => { if (!store.items[xr]) this._slAddItem(store, xr, cid, name); }); });
+    this.setState({ slAdd: null, slLaunchDropOpen: false, slNewCat: '' });
+    const who = a.bulk ? (xrs.length + ' CPs') : (a.firm || 'CP');
+    this.showToast(who + ' added to ' + launches.length + ' launch' + (launches.length === 1 ? '' : 'es') + ' · ' + name);
+  }
+  slAddToCat(catId) {
+    const cat = this.slFor().cats.find(c => c.id === catId); if (!cat) return;
+    this._slAddToLaunches(cat.name);
   }
   slCreateCatAndAdd() {
     const name = this.state.slNewCat.trim(); if (!name) return;
-    const st = this.slFor(); this.slSeq += 1; const id = 'c' + this.slSeq; st.cats.push({ id, name });
-    this.slAddToCat(id);
+    this._slAddToLaunches(name);
   }
   slCreateCat() {
     const name = this.state.slNewCat.trim(); if (!name) return;
@@ -2297,6 +2324,8 @@ class Component extends DCLogic {
     const slAddOpen = !!s.slAdd;
     const slAddTitle = (s.slAdd && s.slAdd.bulk) ? ('Add ' + s.slAdd.bulk.length + ' CPs to shortlist') : ('Add ' + ((s.slAdd && s.slAdd.firm) || 'CP') + ' to shortlist');
     const slAddCats = slStore.cats.map(c => ({ name: c.name, count: slAll.filter(o => o.it.cat === c.id).length, onClick: () => this.slAddToCat(c.id) }));
+    const slAddLaunchOpts = this.launches.map(l => ({ id: l.id, name: l.name, current: l.id === s.currentLaunchId, checked: s.slAddLaunches.includes(l.id), mark: s.slAddLaunches.includes(l.id) ? '☑' : '☐', onToggle: () => this.toggleSlAddLaunch(l.id) }));
+    const slAddLaunchLabel = s.slAddLaunches.length === 1 ? ((this.launches.find(l => l.id === s.slAddLaunches[0]) || {}).name || '1 launch') : (s.slAddLaunches.length + ' launches selected');
 
     const alerts = [
       { text: 'BR Real Estate — RERA expiring in 30 days', time: 'Today · 09:14', dot: '#D97706', onClick: () => this.openProfile('XR022413') },
@@ -2467,6 +2496,7 @@ class Component extends DCLogic {
       slNewCat: s.slNewCat, onSlNewCat: (e) => this.setState({ slNewCat: e.target.value }),
       slCreateCat: () => this.slCreateCat(),
       slAddOpen, slAddTitle, slAddCats,
+      slAddLaunchOpts, slAddLaunchLabel, slLaunchDropOpen: s.slLaunchDropOpen, toggleSlLaunchDrop: () => this.toggleSlLaunchDrop(),
       slCreateCatAndAdd: () => this.slCreateCatAndAdd(),
       closeSlAdd: () => this.closeSlAdd(),
       goShortlistCur: () => this.setState({ screen: 'shortlist' }),
